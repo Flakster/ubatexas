@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 // Whitelist of admin emails
 const ADMIN_EMAILS = [
-    'carlos@ubatexas.com', // Example - User should confirm
+    'carlos.santamaria+ubatexas@gmail.com', // Example - User should confirm
     // Add other admin emails here
 ];
 
