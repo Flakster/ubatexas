@@ -26,7 +26,7 @@ export async function getPhotos(supabaseClient) {
 
 export async function addPhoto(photo, supabaseClient) {
     const client = supabaseClient || supabase;
-    const { data, error } = await client
+    const { error } = await client
         .from('photos')
         .insert([
             {
@@ -37,13 +37,12 @@ export async function addPhoto(photo, supabaseClient) {
                 user_id: photo.user_id,
                 status: 'pending' // Default to pending for moderation
             }
-        ])
-        .select();
+        ]);
 
     if (error) {
         throw new Error(error.message);
     }
-    return data[0];
+    return { success: true };
 }
 
 export async function getPendingPhotos(supabaseClient) {
