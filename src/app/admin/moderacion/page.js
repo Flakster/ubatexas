@@ -1,14 +1,29 @@
 import { getPendingPhotos } from '@/lib/galleries';
 import ModerationList from '@/components/admin/ModerationList';
 import { supabase } from '@/lib/supabase';
-// NOTE: We should ideally use actual Supabase Auth roles or a list of admin IDs.
-// For this prototype, we'll implement a basic check.
-import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
+// Whitelist of admin emails
+const ADMIN_EMAILS = [
+    'carlos@ubatexas.com', // Example - User should confirm
+    // Add other admin emails here
+];
+
 export default async function ModeracionPage() {
-    // Simple check for now: If we wanted real security, we'd verify the JWT server-side.
+    // 1. Get current session server-side
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+        redirect('/login');
+    }
+
+    // 2. Check if user is in whitelist
+    if (!ADMIN_EMAILS.includes(session.user.email)) {
+        redirect('/');
+    }
+
     const photos = await getPendingPhotos();
 
     return (
@@ -21,7 +36,7 @@ export default async function ModeracionPage() {
                 Panel de Moderación
             </h1>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
-                Aquí puedes autorizar o rechazar las fotografías enviadas por la gente antes de que aparezcan en la web principal.
+                Aquí puedes autorizar o borrar definitivamente las fotografías enviadas por la gente.
             </p>
 
             <ModerationList initialPhotos={photos} />

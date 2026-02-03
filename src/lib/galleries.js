@@ -77,3 +77,16 @@ export async function updatePhotoStatus(id, status) {
     }
     return data[0];
 }
+
+export async function deletePhoto(id) {
+    const { data, error } = await supabase
+        .from('photos')
+        .delete()
+        .eq('id', id)
+        .select();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+    return data[0];
+}

@@ -42,7 +42,28 @@ export async function approvePhotoAction(id) {
 }
 
 export async function rejectPhotoAction(id) {
-    const { updatePhotoStatus } = await import('@/lib/galleries');
-    await updatePhotoStatus(id, 'rejected');
+    const { deletePhoto } = await import('@/lib/galleries');
+
+    // 1. Delete from DB and get the record to find the image path
+    const photo = await deletePhoto(id);
+
+    if (photo && photo.image_url) {
+        // 2. Extract path from public URL
+        // Public URL format: https://.../storage/v1/object/public/ubatexas-public/people/filename.jpg
+        const urlParts = photo.image_url.split('/people/');
+        if (urlParts.length > 1) {
+            const fileName = urlParts[1];
+
+            // 3. Delete from Storage
+            const { error: storageError } = await supabase.storage
+                .from('ubatexas-public')
+                .remove([`people/${fileName}`]);
+
+            if (storageError) {
+                console.error('Error deleting from storage:', storageError);
+            }
+        }
+    }
+
     revalidatePath('/admin/moderacion');
 }
