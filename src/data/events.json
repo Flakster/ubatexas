@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "title": "Fiestas del Pueblo - Ubaté 2026",
+    "date": "2026-08-01",
+    "location": "Plaza de Mercado",
+    "description": "El evento más grande del año. Conciertos, ferias y más.",
+    "category": "Fiesta"
+  },
+  {
+    "id": 2,
+    "title": "Exposición Canina",
+    "date": "2026-08-15",
+    "location": "Coliseo Bicentenario",
+    "description": "Lo mejor de la raza y el cuidado animal.",
+    "category": "Exposición"
+  }
+]

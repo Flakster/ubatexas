@@ -1,0 +1,66 @@
+[
+  {
+    "imageUrl": "https://pbs.twimg.com/media/FTxz7GWXwAEaxxu?format=jpg&name=small",
+    "caption": "Comiendo mango",
+    "eventTag": "En la plaza",
+    "author": "Juanito",
+    "id": 1769997647828,
+    "date": "2026-02-02"
+  },
+  {
+    "imageUrl": "https://i.imgur.com/NQ9MNle.png",
+    "caption": "de fiesta",
+    "eventTag": "Desfile de carrozas",
+    "author": "@rwenee",
+    "id": 1769997212957,
+    "date": "2026-02-02"
+  },
+  {
+    "imageUrl": "https://i.imgur.com/a/JGfRwTr.png",
+    "caption": "Disfrutando de las fiestas de Ubatexas",
+    "eventTag": "Desfile de carrozas",
+    "author": "@rwenee",
+    "id": 1769997141452,
+    "date": "2026-02-02"
+  },
+  {
+    "imageUrl": "https://imgur.com/a/YYB6hWA",
+    "caption": "Disfrutando de las fiestas en Ubatexas",
+    "eventTag": "Desfile de carrozas",
+    "author": "@pepito",
+    "id": 1769996192180,
+    "date": "2026-02-02"
+  },
+  {
+    "imageUrl": "https://imgur.com/a/YYB6hWA",
+    "caption": "Disfrutando de las fiestas en Ubatexas",
+    "eventTag": "Desfile de carrozas",
+    "author": "@pepito",
+    "id": 1769996059939,
+    "date": "2026-02-02"
+  },
+  {
+    "id": 1,
+    "imageUrl": "https://images.unsplash.com/photo-1543168256-418811576931?auto=format&fit=crop&q=80&w=800",
+    "caption": "Disfrutando de las fiestas patronales con los amigos.",
+    "eventTag": "Fiestas del Pueblo",
+    "author": "Juan Pérez",
+    "date": "2026-08-02"
+  },
+  {
+    "id": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?auto=format&fit=crop&q=80&w=800",
+    "caption": "Mi campeón en la exposición canina.",
+    "eventTag": "Exposición Canina",
+    "author": "María G.",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1533035353720-f1c6a75cd8ab?auto=format&fit=crop&q=80&w=800",
+    "caption": "Atardecer en la plaza.",
+    "eventTag": "Paisajes",
+    "author": "Camilo T.",
+    "date": "2026-07-20"
+  }
+]

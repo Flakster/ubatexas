@@ -1,66 +1,59 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from 'next/link';
+import { getEvents } from '@/lib/events';
+import styles from './page.module.css';
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const events = await getEvents();
+  const upcomingEvents = events.slice(0, 3);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className={styles.main}>
+      <section className={styles.hero}>
+        <div className="container">
+          <h1 className={styles.title}>
+            <span className={styles.supertext}>Bienvenido a</span>
+            <br />
+            UBATEXAS <span style={{ color: 'var(--color-gold)', verticalAlign: 'middle', fontSize: '0.8em', whiteSpace: 'nowrap' }}>★</span>
+          </h1>
+          <p className={styles.subtitle}>
+            El Escenario de la Provincia.
+            <br />
+            Donde la tradición se encuentra con la aspiración.
           </p>
+          <div className={styles.actions}>
+            <Link href="/agenda" className="btn btn-accent">Ver Agenda 2026</Link>
+            <Link href="/gente" className="btn">Galería de Gente</Link>
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className={`container ${styles.section}`}>
+        <div className={styles.sectionHeader}>
+          <h2>Próximos Eventos</h2>
+          <Link href="/agenda" className={styles.viewAll}>Ver todo &rarr;</Link>
         </div>
-      </main>
+
+        {upcomingEvents.length === 0 ? (
+          <p className={styles.empty}>No hay eventos programados próximamente.</p>
+        ) : (
+          <div className={styles.eventGrid}>
+            {upcomingEvents.map(event => (
+              <div key={event.id} className={styles.eventCard}>
+                <div className={styles.eventDate}>
+                  {new Date(event.date).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}
+                </div>
+                <div className={styles.eventContent}>
+                  <span className={styles.eventCategory}>{event.category}</span>
+                  <h3 className={styles.eventTitle}>{event.title}</h3>
+                  <p className={styles.eventLocation}>📍 {event.location}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "title": "Hacienda La Esperanza",
+        "description": "Vive la experiencia de un hato lechero tradicional. Ordeño al amanecer y desayuno campesino.",
+        "imageUrl": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=800",
+        "vibe": "Tradición",
+        "location": "Ubaté - Vía Cucunubá",
+        "priceLevel": "$$"
+    },
+    {
+        "id": 2,
+        "title": "Ruta de las Rocas - Sutatausa",
+        "description": "Senderismo entre farallones milenarios y arte rupestre. Ideal para desconectarse.",
+        "imageUrl": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800",
+        "vibe": "Aventura",
+        "location": "Sutatausa",
+        "priceLevel": "$"
+    },
+    {
+        "id": 3,
+        "title": "Glamping El Mirador",
+        "description": "Lujo bajo las estrellas. Domos geodésicos con vista a todo el valle de Ubaté.",
+        "imageUrl": "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&q=80&w=800",
+        "vibe": "Relax Total",
+        "location": "Tausa",
+        "priceLevel": "$$$"
+    }
+]
