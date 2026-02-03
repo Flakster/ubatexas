@@ -24,7 +24,7 @@ export default async function ModeracionPage() {
         redirect('/');
     }
 
-    const photos = await getPendingPhotos();
+    const photos = await getPendingPhotos(supabase); // PASS THE CLIENT
 
     return (
         <div className="container" style={{ padding: '4rem 0' }}>

@@ -1,7 +1,8 @@
 import { supabase } from './supabase';
 
-export async function getPhotos() {
-    const { data, error } = await supabase
+export async function getPhotos(supabaseClient) {
+    const client = supabaseClient || supabase;
+    const { data, error } = await client
         .from('photos')
         .select('*')
         .eq('status', 'approved') // Only show approved photos
@@ -23,8 +24,9 @@ export async function getPhotos() {
     }));
 }
 
-export async function addPhoto(photo) {
-    const { data, error } = await supabase
+export async function addPhoto(photo, supabaseClient) {
+    const client = supabaseClient || supabase;
+    const { data, error } = await client
         .from('photos')
         .insert([
             {
@@ -44,8 +46,9 @@ export async function addPhoto(photo) {
     return data[0];
 }
 
-export async function getPendingPhotos() {
-    const { data, error } = await supabase
+export async function getPendingPhotos(supabaseClient) {
+    const client = supabaseClient || supabase;
+    const { data, error } = await client
         .from('photos')
         .select('*')
         .eq('status', 'pending')
@@ -66,8 +69,9 @@ export async function getPendingPhotos() {
     }));
 }
 
-export async function updatePhotoStatus(id, status) {
-    const { data, error } = await supabase
+export async function updatePhotoStatus(id, status, supabaseClient) {
+    const client = supabaseClient || supabase;
+    const { data, error } = await client
         .from('photos')
         .update({ status })
         .eq('id', id)
@@ -79,8 +83,9 @@ export async function updatePhotoStatus(id, status) {
     return data[0];
 }
 
-export async function deletePhoto(id) {
-    const { data, error } = await supabase
+export async function deletePhoto(id, supabaseClient) {
+    const client = supabaseClient || supabase;
+    const { data, error } = await client
         .from('photos')
         .delete()
         .eq('id', id)

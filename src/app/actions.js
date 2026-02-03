@@ -52,7 +52,7 @@ export async function uploadPhotoAction(formData) {
             eventTag,
             author: `@${authorName}`,
             user_id: userId
-        });
+        }, supabase); // PASS THE AUTHENTICATED CLIENT
 
         revalidatePath('/gente');
         return { success: true };
@@ -64,16 +64,18 @@ export async function uploadPhotoAction(formData) {
 
 export async function approvePhotoAction(id) {
     const { updatePhotoStatus } = await import('@/lib/galleries');
-    await updatePhotoStatus(id, 'approved');
+    const supabase = await createClient(); // Create server client
+    await updatePhotoStatus(id, 'approved', supabase); // Pass it
     revalidatePath('/gente');
     revalidatePath('/admin/moderacion');
 }
 
 export async function rejectPhotoAction(id) {
     const { deletePhoto } = await import('@/lib/galleries');
+    const supabase = await createClient(); // Create server client
 
     // 1. Delete from DB and get the record to find the image path
-    const photo = await deletePhoto(id);
+    const photo = await deletePhoto(id, supabase); // Pass it
 
     if (photo && photo.image_url) {
         // 2. Extract path from public URL
