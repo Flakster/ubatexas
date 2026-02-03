@@ -7,6 +7,7 @@ import styles from './AuthForm.module.css';
 export default function AuthForm() {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
+    const [displayName, setDisplayName] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState(null);
     const [isSignUp, setIsSignUp] = useState(false);
@@ -23,6 +24,9 @@ export default function AuthForm() {
                     password,
                     options: {
                         emailRedirectTo: `${window.location.origin}/login`,
+                        data: {
+                            display_name: displayName
+                        }
                     },
                 });
                 if (error) throw error;
@@ -45,6 +49,19 @@ export default function AuthForm() {
         <div className={styles.container}>
             <h2 className={styles.title}>{isSignUp ? 'Únete a Ubatexas' : 'Bienvenido de nuevo'}</h2>
             <form onSubmit={handleAuth} className={styles.form}>
+                {isSignUp && (
+                    <div className={styles.group}>
+                        <label htmlFor="displayName">¿Cómo te llamas?</label>
+                        <input
+                            id="displayName"
+                            type="text"
+                            placeholder="Ej: Carlos Ubaté"
+                            value={displayName}
+                            onChange={(e) => setDisplayName(e.target.value)}
+                            required
+                        />
+                    </div>
+                )}
                 <div className={styles.group}>
                     <label htmlFor="email">Email</label>
                     <input

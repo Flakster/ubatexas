@@ -8,7 +8,15 @@ export async function uploadPhotoAction(formData) {
     const file = formData.get('file');
     const caption = formData.get('caption');
     const eventTag = formData.get('eventTag');
-    const author = formData.get('author');
+
+    // 1. Verify session server-side for security
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('Debes estar autenticado para subir fotos.');
+
+    const user = session.user;
+    const userId = user.id;
+    // Get named from metadata or fallback to email prefix
+    const authorName = user.user_metadata?.display_name || user.email.split('@')[0];
 
     const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
     const { error: uploadError } = await supabase.storage
@@ -28,7 +36,8 @@ export async function uploadPhotoAction(formData) {
         imageUrl: publicUrl,
         caption,
         eventTag,
-        author
+        author: `@${authorName}`,
+        user_id: userId
     });
 
     revalidatePath('/gente');

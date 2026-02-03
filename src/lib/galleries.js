@@ -32,6 +32,7 @@ export async function addPhoto(photo) {
                 caption: photo.caption,
                 event_tag: photo.eventTag,
                 author: photo.author,
+                user_id: photo.user_id,
                 status: 'pending' // Default to pending for moderation
             }
         ])

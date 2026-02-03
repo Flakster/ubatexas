@@ -6,11 +6,11 @@ import styles from './UploadForm.module.css';
 
 export default function UploadForm({ onSubmit }) {
     const router = useRouter();
+    const { user } = useAuth();
     const [file, setFile] = useState(null);
     const [formData, setFormData] = useState({
         caption: '',
         eventTag: '',
-        author: ''
     });
     const [loading, setLoading] = useState(false);
 
@@ -27,7 +27,6 @@ export default function UploadForm({ onSubmit }) {
             data.append('file', file);
             data.append('caption', formData.caption);
             data.append('eventTag', formData.eventTag);
-            data.append('author', formData.author);
 
             await onSubmit(data); // Pass FormData to server action
             setLoading(false);
@@ -42,6 +41,8 @@ export default function UploadForm({ onSubmit }) {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    const currentAuthor = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Usuario';
 
     return (
         <form className={styles.form} onSubmit={handleSubmit}>
@@ -86,16 +87,20 @@ export default function UploadForm({ onSubmit }) {
                 </div>
 
                 <div className={styles.group}>
-                    <label htmlFor="author">Tu Nombre (o Usuario)</label>
-                    <input
-                        type="text"
-                        id="author"
-                        name="author"
-                        required
-                        value={formData.author}
-                        onChange={handleChange}
-                        placeholder="@usuario"
-                    />
+                    <label>Publicando como</label>
+                    <div style={{
+                        padding: '0.75rem',
+                        background: '#f9f9f9',
+                        borderRadius: '4px',
+                        fontWeight: '600',
+                        color: 'var(--color-primary)',
+                        border: '1px solid var(--color-border)'
+                    }}>
+                        @{currentAuthor}
+                    </div>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
+                        Vinculado a tu cuenta verificada.
+                    </p>
                 </div>
             </div>
 
