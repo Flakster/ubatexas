@@ -5,51 +5,60 @@ import { supabase } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
 
 export async function uploadPhotoAction(formData) {
-    const file = formData.get('file');
-    const caption = formData.get('caption');
-    const eventTag = formData.get('eventTag');
+    try {
+        const file = formData.get('file');
+        const caption = formData.get('caption');
+        const eventTag = formData.get('eventTag');
 
-    // 1. Verify session server-side for security
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (!file) {
+            return { error: 'No se recibió ninguna foto.' };
+        }
 
-    if (sessionError) {
-        throw new Error(`Error de sesión en el servidor: ${sessionError.message}`);
+        // 1. Verify session server-side for security
+        // Note: Standard Supabase client might not see cookies in Server Actions
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError) {
+            return { error: `Error de sesión en el servidor: ${sessionError.message}` };
+        }
+
+        if (!session) {
+            return { error: 'No se detectó una sesión activa en el servidor. Prueba cerrando sesión y volviendo a entrar para refrescar las cookies.' };
+        }
+
+        const user = session.user;
+        if (!user) return { error: 'Usuario no encontrado en la sesión del servidor.' };
+        const userId = user.id;
+        const authorName = user.user_metadata?.display_name || user.email.split('@')[0];
+
+        const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
+        const { error: uploadError } = await supabase.storage
+            .from('ubatexas-public')
+            .upload(`people/${fileName}`, file);
+
+        if (uploadError) {
+            console.error('Supabase Storage Error:', uploadError);
+            return { error: `Error subiendo imagen a Storage: ${uploadError.message}` };
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+            .from('ubatexas-public')
+            .getPublicUrl(`people/${fileName}`);
+
+        await addPhoto({
+            imageUrl: publicUrl,
+            caption,
+            eventTag,
+            author: `@${authorName}`,
+            user_id: userId
+        });
+
+        revalidatePath('/gente');
+        return { success: true };
+    } catch (error) {
+        console.error('Action Error:', error);
+        return { error: error.message || 'Error inesperado en el servidor' };
     }
-
-    if (!session) {
-        // Diagnostic: check if the cookie even exists (we can't easily here without next/headers, but let's be descriptive)
-        throw new Error('No se detectó una sesión activa en el servidor. Prueba cerrando sesión y volviendo a entrar.');
-    }
-
-    const user = session.user;
-    if (!user) throw new Error('Usuario no encontrado en la sesión del servidor.');
-    const userId = user.id;
-    // Get named from metadata or fallback to email prefix
-    const authorName = user.user_metadata?.display_name || user.email.split('@')[0];
-
-    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
-    const { error: uploadError } = await supabase.storage
-        .from('ubatexas-public')
-        .upload(`people/${fileName}`, file);
-
-    if (uploadError) {
-        console.error('Supabase Storage Error:', uploadError);
-        throw new Error(`Error uploading image: ${uploadError.message}`);
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-        .from('ubatexas-public')
-        .getPublicUrl(`people/${fileName}`);
-
-    await addPhoto({
-        imageUrl: publicUrl,
-        caption,
-        eventTag,
-        author: `@${authorName}`,
-        user_id: userId
-    });
-
-    revalidatePath('/gente');
 }
 
 export async function approvePhotoAction(id) {
@@ -67,7 +76,6 @@ export async function rejectPhotoAction(id) {
 
     if (photo && photo.image_url) {
         // 2. Extract path from public URL
-        // Public URL format: https://.../storage/v1/object/public/ubatexas-public/people/filename.jpg
         const urlParts = photo.image_url.split('/people/');
         if (urlParts.length > 1) {
             const fileName = urlParts[1];

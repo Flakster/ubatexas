@@ -29,7 +29,14 @@ export default function UploadForm({ onSubmit }) {
             data.append('caption', formData.caption);
             data.append('eventTag', formData.eventTag);
 
-            await onSubmit(data); // Pass FormData to server action
+            const result = await onSubmit(data); // Pass FormData to server action
+
+            if (result?.error) {
+                alert(`Hubo un error al subir la foto: ${result.error}`);
+                setLoading(false);
+                return;
+            }
+
             setLoading(false);
             router.push('/gente');
         } catch (error) {
