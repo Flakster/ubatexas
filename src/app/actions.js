@@ -10,10 +10,19 @@ export async function uploadPhotoAction(formData) {
     const eventTag = formData.get('eventTag');
 
     // 1. Verify session server-side for security
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Debes estar autenticado para subir fotos.');
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError) {
+        throw new Error(`Error de sesión en el servidor: ${sessionError.message}`);
+    }
+
+    if (!session) {
+        // Diagnostic: check if the cookie even exists (we can't easily here without next/headers, but let's be descriptive)
+        throw new Error('No se detectó una sesión activa en el servidor. Prueba cerrando sesión y volviendo a entrar.');
+    }
 
     const user = session.user;
+    if (!user) throw new Error('Usuario no encontrado en la sesión del servidor.');
     const userId = user.id;
     // Get named from metadata or fallback to email prefix
     const authorName = user.user_metadata?.display_name || user.email.split('@')[0];
