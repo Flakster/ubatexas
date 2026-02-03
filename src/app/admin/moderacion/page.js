@@ -1,18 +1,18 @@
 import { getPendingPhotos } from '@/lib/galleries';
 import ModerationList from '@/components/admin/ModerationList';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabaseServer';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 // Whitelist of admin emails
 const ADMIN_EMAILS = [
-    'carlos.santamaria+ubatexas@gmail.com', // Example - User should confirm
-    // Add other admin emails here
+    'carlos.santamaria+ubatexas@gmail.com',
 ];
 
 export default async function ModeracionPage() {
-    // 1. Get current session server-side
+    // 1. Get current session server-side with SSR client
+    const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
 
     if (!session) {
