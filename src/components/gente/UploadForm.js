@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import styles from './UploadForm.module.css';
 
 export default function UploadForm({ onSubmit }) {
+    console.log('UploadForm rendering with useAuth fix');
     const router = useRouter();
     const { user } = useAuth();
     const [file, setFile] = useState(null);
@@ -91,11 +92,11 @@ export default function UploadForm({ onSubmit }) {
                     <label>Publicando como</label>
                     <div style={{
                         padding: '0.75rem',
-                        background: '#f9f9f9',
+                        background: '#fff3cd',
                         borderRadius: '4px',
                         fontWeight: '600',
-                        color: 'var(--color-primary)',
-                        border: '1px solid var(--color-border)'
+                        color: '#856404',
+                        border: '1px solid #ffeeba'
                     }}>
                         @{currentAuthor}
                     </div>
