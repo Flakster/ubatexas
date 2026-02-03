@@ -23,7 +23,7 @@ export default function AuthForm() {
                     email,
                     password,
                     options: {
-                        emailRedirectTo: `${window.location.origin}/login`,
+                        emailRedirectTo: `${window.location.origin}/auth/callback`,
                         data: {
                             display_name: displayName
                         }
