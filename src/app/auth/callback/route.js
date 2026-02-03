@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabaseServer';
 
 export async function GET(request) {
     const requestUrl = new URL(request.url);
@@ -7,10 +7,7 @@ export async function GET(request) {
     const next = requestUrl.searchParams.get('next') ?? '/';
 
     if (code) {
-        const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-        );
+        const supabase = await createClient();
 
         // Exchange the code for a session (this verifies the email in Supabase)
         const { error } = await supabase.auth.exchangeCodeForSession(code);

@@ -1,11 +1,12 @@
 'use server';
 
 import { addPhoto } from '@/lib/galleries';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabaseServer';
 import { revalidatePath } from 'next/cache';
 
 export async function uploadPhotoAction(formData) {
     try {
+        const supabase = await createClient();
         const file = formData.get('file');
         const caption = formData.get('caption');
         const eventTag = formData.get('eventTag');
@@ -15,7 +16,7 @@ export async function uploadPhotoAction(formData) {
         }
 
         // 1. Verify session server-side for security
-        // Note: Standard Supabase client might not see cookies in Server Actions
+        // Now it uses the server client which HAS access to cookies
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
         if (sessionError) {
