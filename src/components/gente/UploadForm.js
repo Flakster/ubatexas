@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import styles from './UploadForm.module.css';
 
 // Utility to compress image on client side
-const compressImage = (file) => {
+export const compressImage = (file) => {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -52,7 +52,7 @@ const compressImage = (file) => {
     });
 };
 
-export default function UploadForm({ onSubmit }) {
+export default function UploadForm({ onSubmit, compressImage: compressFn = compressImage }) {
     const router = useRouter();
     const { user } = useAuth();
     const [file, setFile] = useState(null);
@@ -71,8 +71,8 @@ export default function UploadForm({ onSubmit }) {
 
         setLoading(true);
         try {
-            // Compress image before upload
-            const compressedFile = await compressImage(file);
+            // Compress image before upload using the injected function
+            const compressedFile = await compressFn(file);
             console.log(`Original: ${(file.size / 1024 / 1024).toFixed(2)}MB, Compressed: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
 
             const data = new FormData();
@@ -106,7 +106,7 @@ export default function UploadForm({ onSubmit }) {
     const currentAuthor = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Usuario';
 
     return (
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form className={styles.form} onSubmit={handleSubmit} role="form">
             <div className={styles.group}>
                 <label htmlFor="file">Foto</label>
                 <input

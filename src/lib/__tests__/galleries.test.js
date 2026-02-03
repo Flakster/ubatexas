@@ -1,17 +1,19 @@
 import { getPhotos } from '@/lib/galleries';
 
 // Mock Supabase client
-jest.mock('@/lib/supabase', () => ({
-    supabase: {
-        from: jest.fn(() => ({
-            select: jest.fn(() => ({
-                eq: jest.fn(() => ({
-                    order: jest.fn(() => Promise.resolve({ data: [], error: null })),
-                })),
-            })),
-        })),
-    },
-}));
+jest.mock('@/lib/supabase', () => {
+    const mockChain = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockReturnThis(),
+    };
+
+    return {
+        supabase: {
+            from: jest.fn(() => mockChain),
+        },
+    };
+});
 
 describe('Galleries Library', () => {
     it('should fetch photos and transform them correctly', async () => {
@@ -26,9 +28,9 @@ describe('Galleries Library', () => {
             },
         ];
 
-        // Update mock to return data
         const { supabase } = require('@/lib/supabase');
-        supabase.from().select().eq().order.mockResolvedValueOnce({ data: mockData, error: null });
+        // Ensure the last call in the chain 'order' returns the data
+        supabase.from().order.mockResolvedValueOnce({ data: mockData, error: null });
 
         const photos = await getPhotos();
 
@@ -43,7 +45,7 @@ describe('Galleries Library', () => {
 
     it('should return an empty array on error', async () => {
         const { supabase } = require('@/lib/supabase');
-        supabase.from().select().eq().order.mockResolvedValueOnce({ data: null, error: { message: 'Error' } });
+        supabase.from().order.mockResolvedValueOnce({ data: null, error: { message: 'Error' } });
 
         const photos = await getPhotos();
         expect(photos).toEqual([]);
