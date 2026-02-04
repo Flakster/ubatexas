@@ -1,14 +1,42 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import PhotoCard from './PhotoCard';
 import Lightbox from './Lightbox';
 import TagFilter from './TagFilter';
 import styles from './GalleryGrid.module.css';
 
 export default function GalleryGrid({ photos }) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [activeTag, setActiveTag] = useState(null);
+
+    // Sync URL with selection
+    useEffect(() => {
+        const photoId = searchParams.get('photo');
+        if (photoId && photos) {
+            const photo = photos.find(p => p.id.toString() === photoId);
+            if (photo) {
+                setSelectedPhoto(photo);
+            }
+        } else {
+            setSelectedPhoto(null);
+        }
+    }, [searchParams, photos]);
+
+    const handlePhotoSelect = (photo) => {
+        const params = new URLSearchParams(searchParams);
+        if (photo) {
+            params.set('photo', photo.id);
+        } else {
+            params.delete('photo');
+        }
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    };
 
     if (!photos || photos.length === 0) {
         return <p className={styles.empty}>No hay fotos publicadas aún.</p>;
@@ -40,7 +68,7 @@ export default function GalleryGrid({ photos }) {
                 {filteredPhotos.map((photo) => (
                     <div
                         key={photo.id}
-                        onClick={() => setSelectedPhoto(photo)}
+                        onClick={() => handlePhotoSelect(photo)}
                         style={{ cursor: 'pointer' }}
                     >
                         <PhotoCard photo={photo} />
@@ -55,7 +83,7 @@ export default function GalleryGrid({ photos }) {
             {selectedPhoto && (
                 <Lightbox
                     photo={selectedPhoto}
-                    onClose={() => setSelectedPhoto(null)}
+                    onClose={() => handlePhotoSelect(null)}
                 />
             )}
         </>

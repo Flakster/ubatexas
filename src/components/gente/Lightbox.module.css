@@ -103,13 +103,46 @@
 
 .meta {
     margin-top: auto;
-    padding-top: 1rem;
+    padding-top: 1.5rem;
     border-top: 1px solid var(--color-border);
     font-size: 0.9rem;
     color: var(--color-text-muted);
     display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.metaLeft {
+    display: flex;
     flex-direction: column;
     gap: 0.3rem;
+}
+
+.sharing {
+    display: flex;
+    align-items: center;
+}
+
+.shareBtn {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.shareBtn:hover {
+    background: white;
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .author {

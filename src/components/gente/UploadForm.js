@@ -41,14 +41,33 @@ export const compressImage = (file) => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Convert to blob with 0.7 quality
+                // Add Watermark
+                const fontSize = Math.max(24, Math.floor(width / 35));
+                ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+
+                // Add shadow for readability
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+
+                const padding = fontSize * 0.8;
+                ctx.fillText('ubatexas.com', width - padding, height - padding);
+
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+
+                // Convert to blob with 0.8 quality
                 canvas.toBlob((blob) => {
                     const compressedFile = new File([blob], file.name, {
                         type: 'image/jpeg',
                         lastModified: Date.now(),
                     });
                     resolve(compressedFile);
-                }, 'image/jpeg', 0.7);
+                }, 'image/jpeg', 0.8);
             };
         };
     });
