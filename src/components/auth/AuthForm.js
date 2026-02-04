@@ -126,11 +126,11 @@ export default function AuthForm() {
             <form onSubmit={handleAuth} className={styles.form}>
                 {isSignUp && (
                     <div className={styles.group}>
-                        <label htmlFor="displayName">¿Cómo te llamas?</label>
+                        <label htmlFor="displayName">Nombre de usuario</label>
                         <input
                             id="displayName"
                             type="text"
-                            placeholder="Ej: Carlos Ubaté"
+                            placeholder="Ej: Lucas"
                             value={displayName}
                             onChange={(e) => setDisplayName(e.target.value)}
                             required
