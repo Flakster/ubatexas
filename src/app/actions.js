@@ -1,4 +1,4 @@
-clea'use server';
+'use server';
 
 import { addPhoto } from '@/lib/galleries';
 import { createClient } from '@/lib/supabaseServer';
