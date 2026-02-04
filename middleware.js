@@ -54,13 +54,21 @@ export async function middleware(request) {
         }
     );
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
 
     // If user is logged in, check if they're in a recovery session
-    if (user) {
-        // Check if this is a recovery session by looking at the user's metadata
-        // Supabase sets recovery_sent_at when a password reset is initiated
-        const isRecoverySession = user.recovery_sent_at !== undefined && user.recovery_sent_at !== null;
+    if (session && session.user) {
+        // Check if this is a recovery session
+        // The session will have recovery_sent_at when password reset was initiated
+        // After successful password update, Supabase clears this field
+        const recoveryTime = session.user.recovery_sent_at;
+        const lastSignIn = session.user.last_sign_in_at;
+
+        // User is in recovery mode if:
+        // 1. recovery_sent_at exists
+        // 2. AND it's more recent than the last sign in (meaning password hasn't been updated yet)
+        const isRecoverySession = recoveryTime && lastSignIn &&
+            new Date(recoveryTime) > new Date(lastSignIn);
 
         // If in recovery session and NOT on the reset password page, redirect there
         if (isRecoverySession && !request.nextUrl.pathname.startsWith('/auth/reset-password')) {
