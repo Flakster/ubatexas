@@ -13,6 +13,12 @@ export default function AuthCallbackHandler() {
         const handleCallback = async () => {
             const code = searchParams.get('code');
 
+            // Debug logging
+            console.log('=== Password Reset Debug ===');
+            console.log('Full URL:', window.location.href);
+            console.log('Hash:', window.location.hash);
+            console.log('Search params code:', code);
+
             if (!code) {
                 setError('No se encontró código de verificación');
                 setTimeout(() => router.push('/login'), 2000);
@@ -35,10 +41,15 @@ export default function AuthCallbackHandler() {
                 const hashParams = new URLSearchParams(window.location.hash.substring(1));
                 const type = hashParams.get('type');
 
+                console.log('Hash params:', Object.fromEntries(hashParams.entries()));
+                console.log('Type from hash:', type);
+
                 if (type === 'recovery') {
+                    console.log('✅ Recovery detected, redirecting to reset password');
                     // This is a password recovery, redirect to reset password page
                     router.push('/auth/reset-password');
                 } else {
+                    console.log('❌ No recovery type, redirecting to home');
                     // Regular email verification, redirect to home
                     router.push('/');
                 }
