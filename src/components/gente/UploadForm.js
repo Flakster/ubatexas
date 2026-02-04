@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { formatUsername } from '@/lib/utils';
+import { containsProfanity } from '@/lib/moderation';
 import styles from './UploadForm.module.css';
 
 // Utility to compress image on client side
@@ -67,6 +68,11 @@ export default function UploadForm({ onSubmit, compressImage: compressFn = compr
         e.preventDefault();
         if (!file) {
             alert('Por favor selecciona una foto.');
+            return;
+        }
+
+        if (containsProfanity(formData.eventTag) || containsProfanity(formData.caption)) {
+            alert('Lo sentimos, tu descripción o etiqueta contiene lenguaje no permitido. Por favor usa un lenguaje respetuoso.');
             return;
         }
 

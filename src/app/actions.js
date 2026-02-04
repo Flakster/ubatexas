@@ -3,6 +3,7 @@
 import { addPhoto } from '@/lib/galleries';
 import { createClient } from '@/lib/supabaseServer';
 import { revalidatePath } from 'next/cache';
+import { containsProfanity } from '@/lib/moderation';
 
 export async function uploadPhotoAction(formData) {
     try {
@@ -14,6 +15,10 @@ export async function uploadPhotoAction(formData) {
 
         if (!file) {
             return { error: 'No se recibió ninguna foto.' };
+        }
+
+        if (containsProfanity(caption) || containsProfanity(eventTag)) {
+            return { error: 'Contenido no permitido detectado. Por favor usa un lenguaje respetuoso.' };
         }
 
         // 1. Verify user server-side (getUser is more reliable than getSession for RLS)
