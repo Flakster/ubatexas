@@ -72,19 +72,31 @@ h6 {
 
 /* Utilidades básicas */
 .btn {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
   background-color: var(--color-primary);
   color: white;
-  border-radius: 4px;
+  border-radius: 10px;
   font-weight: 600;
-  transition: background-color 0.2s;
+  font-size: 0.95rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
 }
 
 .btn:hover {
   background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 .btn-accent {
