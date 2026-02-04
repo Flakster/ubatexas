@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { formatUsername } from '@/lib/utils';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -18,13 +19,20 @@ export default function Header() {
                     </Link>
                 </div>
 
-                <button
-                    className={styles.menuToggle}
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    aria-label="Toggle menu"
-                >
-                    {isMenuOpen ? '✕' : '☰'}
-                </button>
+                <div className={styles.navActions}>
+                    {user && (
+                        <span className={styles.mobileUsername}>
+                            {formatUsername(user.user_metadata?.display_name)}
+                        </span>
+                    )}
+                    <button
+                        className={styles.menuToggle}
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        aria-label="Toggle menu"
+                    >
+                        {isMenuOpen ? '✕' : '☰'}
+                    </button>
+                </div>
 
                 <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
                     <ul className={styles.navList}>
@@ -34,9 +42,14 @@ export default function Header() {
                         <li><Link href="/negocios" onClick={() => setIsMenuOpen(false)}>Negocios</Link></li>
                         <li>
                             {user ? (
-                                <button onClick={() => { signOut(); setIsMenuOpen(false); }} className={styles.authBtn}>
-                                    Salir
-                                </button>
+                                <div className={styles.userInfo}>
+                                    <span className={styles.desktopUsername}>
+                                        {formatUsername(user.user_metadata?.display_name)}
+                                    </span>
+                                    <button onClick={() => { signOut(); setIsMenuOpen(false); }} className={styles.authBtn}>
+                                        Salir
+                                    </button>
+                                </div>
                             ) : (
                                 <Link href="/login" onClick={() => setIsMenuOpen(false)} className={styles.authBtn}>
                                     Entrar

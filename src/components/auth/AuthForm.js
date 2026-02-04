@@ -43,8 +43,8 @@ export default function AuthForm() {
                 // 1. Validaciones de formato
                 // - Empieza por letra
                 // - Solo letras y números
-                // - Entre 3 y 30 caracteres
-                const usernameRegex = /^[a-zA-Z][a-zA-Z0-9]{2,29}$/;
+                // - Entre 3 y 20 caracteres
+                const usernameRegex = /^[a-zA-Z][a-zA-Z0-9]{2,19}$/;
 
                 if (!rawDisplayName) {
                     throw new Error('Por favor ingresa un nombre de usuario.');
@@ -54,12 +54,16 @@ export default function AuthForm() {
                     throw new Error('El nombre de usuario debe tener al menos 3 caracteres.');
                 }
 
+                if (rawDisplayName.length > 20) {
+                    throw new Error('El nombre de usuario no puede tener más de 20 caracteres.');
+                }
+
                 if (!/^[a-zA-Z]/.test(rawDisplayName)) {
                     throw new Error('El nombre de usuario debe empezar por una letra.');
                 }
 
                 if (!usernameRegex.test(rawDisplayName)) {
-                    throw new Error('El nombre de usuario solo puede contener letras y números, sin espacios ni caracteres especiales, y máximo 30 caracteres.');
+                    throw new Error('El nombre de usuario solo puede contener letras y números, sin espacios ni caracteres especiales.');
                 }
 
                 const cleanDisplayName = rawDisplayName.toUpperCase();

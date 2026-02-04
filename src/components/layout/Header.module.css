@@ -117,3 +117,48 @@
         text-align: center;
     }
 }
+
+.navActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.mobileUsername {
+    display: none;
+}
+
+.desktopUsername {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    letter-spacing: 0.02em;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+@media (max-width: 768px) {
+    .mobileUsername {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--color-accent);
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .desktopUsername {
+        display: none;
+    }
+
+    .userInfo {
+        flex-direction: column;
+        width: 100%;
+    }
+}
