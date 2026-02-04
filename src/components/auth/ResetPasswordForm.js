@@ -13,7 +13,7 @@ export default function ResetPasswordForm() {
     const [checkingSession, setCheckingSession] = useState(true);
     const router = useRouter();
 
-    // Check if user has an active session
+    // Check if user has an active session and listen for changes
     useEffect(() => {
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
@@ -28,6 +28,19 @@ export default function ResetPasswordForm() {
         };
 
         checkSession();
+
+        // Listen for auth state changes (like logout)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+                // User signed out, redirect to login
+                router.push('/login');
+            }
+        });
+
+        // Cleanup subscription on unmount
+        return () => {
+            subscription.unsubscribe();
+        };
     }, [router]);
 
     const handleUpdatePassword = async (e) => {
