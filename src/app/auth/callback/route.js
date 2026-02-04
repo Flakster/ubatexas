@@ -5,21 +5,16 @@ export async function GET(request) {
     const requestUrl = new URL(request.url);
     const code = requestUrl.searchParams.get('code');
     const next = requestUrl.searchParams.get('next') ?? '/';
-    const type = requestUrl.searchParams.get('type');
 
     if (code) {
         const supabase = await createClient();
 
-        // Exchange the code for a session (this verifies the email in Supabase)
+        // Exchange the code for a session
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (!error) {
-            // If this is a password recovery flow, redirect to reset password page
-            if (type === 'recovery') {
-                return NextResponse.redirect(new URL('/auth/reset-password', request.url));
-            }
-
-            // Otherwise, redirect to the page the user was trying to access
+            // Redirect to the page the user was trying to access
+            // Note: Password recovery detection happens client-side via hash fragment
             return NextResponse.redirect(new URL(next, request.url));
         } else {
             console.error('Auth verification error:', error);
