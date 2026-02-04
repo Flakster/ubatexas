@@ -82,6 +82,7 @@ export default function UploadForm({ onSubmit, compressImage: compressFn = compr
         eventTag: '',
     });
     const [loading, setLoading] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -115,7 +116,7 @@ export default function UploadForm({ onSubmit, compressImage: compressFn = compr
             }
 
             setLoading(false);
-            router.push('/gente');
+            setShowSuccess(true);
         } catch (error) {
             console.error('Error uploading:', error);
             // Show the actual error message if possible
@@ -124,6 +125,33 @@ export default function UploadForm({ onSubmit, compressImage: compressFn = compr
             setLoading(false);
         }
     };
+
+    if (showSuccess) {
+        return (
+            <div className={styles.successContainer}>
+                <div className={styles.successIcon}>
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="var(--color-success, #2e7d32)" strokeWidth="2" />
+                        <path d="M8 12L11 15L16 9" stroke="var(--color-success, #2e7d32)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </div>
+                <h3 className={styles.successTitle}>¡Recibida con éxito!</h3>
+                <p className={styles.successMessage}>
+                    Tu fotografía será revisada por un administrador antes de ser publicada.
+                    Esto nos ayuda a mantener la calidad de <strong>Ubatexas</strong>.
+                    <br /><br />
+                    ¡Gracias por compartir!
+                </p>
+                <button
+                    onClick={() => router.push('/gente')}
+                    className="btn btn-primary"
+                    style={{ width: '100%', marginTop: '1rem' }}
+                >
+                    Volver a la Galería
+                </button>
+            </div>
+        );
+    }
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
