@@ -1,0 +1,11 @@
+<svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Círculo Verde de Fondo -->
+  <circle cx="50" cy="55" r="32" fill="#1B4D3E" stroke="#D4AF37" stroke-width="1.5" />
+  
+  <!-- Cuernos de Longhorn (Ocupan todo el ancho) -->
+  <path d="M2 30 C 5 45, 25 55, 48 55" stroke="white" stroke-width="5" stroke-linecap="round" />
+  <path d="M98 30 C 95 45, 75 55, 52 55" stroke="white" stroke-width="5" stroke-linecap="round" />
+  
+  <!-- Estrella Blanca Central -->
+  <path d="M50 35 L54.5 45.5 L66 45.5 L56.5 52.5 L60 63.5 L50 56.5 L40 63.5 L43.5 52.5 L34 45.5 L45.5 45.5 Z" fill="white" />
+</svg>

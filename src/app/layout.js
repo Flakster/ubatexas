@@ -10,6 +10,9 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-serif'
 export const metadata = {
   title: 'Ubatexas | El Escenario de la Provincia',
   description: 'Digital Media & Lifestyle en la Provincia de Ubaté',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({ children }) {
