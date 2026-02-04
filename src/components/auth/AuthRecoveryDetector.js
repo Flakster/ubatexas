@@ -18,32 +18,41 @@ export default function AuthRecoveryDetector() {
             console.log('=== Recovery Detector ===');
             console.log('Code found in URL:', code);
             console.log('Full hash:', window.location.hash);
+            console.log('Full URL:', window.location.href);
 
+            // Check the hash for recovery type FIRST
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const typeFromHash = hashParams.get('type');
+
+            console.log('Type from hash:', typeFromHash);
+
+            // If hash indicates recovery, redirect immediately without code exchange
+            if (typeFromHash === 'recovery' || window.location.hash.includes('type=recovery')) {
+                console.log('✅ Recovery flow detected from hash, redirecting to reset password');
+                router.push('/auth/reset-password');
+                return;
+            }
+
+            // For non-recovery flows, try to exchange the code
             try {
-                // Exchange the code for a session
                 const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
                 if (error) {
                     console.error('Error exchanging code:', error);
+                    // If it's a PKCE error, it might be a recovery flow that didn't have the hash
+                    if (error.message.includes('PKCE') || error.message.includes('code verifier')) {
+                        console.log('PKCE error detected, checking if this might be recovery...');
+                        // Redirect to reset password as a fallback
+                        router.push('/auth/reset-password');
+                        return;
+                    }
                     return;
                 }
 
-                console.log('Session data:', data);
-
-                // Check the hash for recovery type
-                const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                const type = hashParams.get('type');
-
-                console.log('Type from hash:', type);
-
-                if (type === 'recovery' || window.location.hash.includes('type=recovery')) {
-                    console.log('✅ Recovery flow detected, redirecting to reset password');
-                    router.push('/auth/reset-password');
-                } else {
-                    console.log('Regular auth flow, cleaning URL');
-                    // Clean the URL but stay on homepage
-                    router.replace('/');
-                }
+                console.log('Session exchanged successfully');
+                console.log('Regular auth flow, cleaning URL');
+                // Clean the URL but stay on homepage
+                router.replace('/');
             } catch (err) {
                 console.error('Recovery detection error:', err);
             }
