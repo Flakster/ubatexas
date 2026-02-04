@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import styles from './AuthForm.module.css';
@@ -10,7 +10,25 @@ export default function ResetPasswordForm() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
+    const [checkingSession, setCheckingSession] = useState(true);
     const router = useRouter();
+
+    // Check if user has an active session
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
+                // No session, redirect to login
+                router.push('/login');
+                return;
+            }
+
+            setCheckingSession(false);
+        };
+
+        checkSession();
+    }, [router]);
 
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
@@ -33,7 +51,16 @@ export default function ResetPasswordForm() {
                 password: password,
             });
 
-            if (error) throw error;
+            if (error) {
+                // Handle specific error cases
+                if (error.message.includes('session')) {
+                    setMessage({ type: 'error', text: 'Tu sesión ha expirado. Por favor solicita un nuevo enlace de recuperación.' });
+                    setTimeout(() => router.push('/login'), 3000);
+                } else {
+                    throw error;
+                }
+                return;
+            }
 
             setMessage({ type: 'success', text: '¡Contraseña actualizada con éxito! Redirigiendo...' });
 
@@ -48,6 +75,15 @@ export default function ResetPasswordForm() {
             setLoading(false);
         }
     };
+
+    // Show loading state while checking session
+    if (checkingSession) {
+        return (
+            <div className={styles.container}>
+                <p style={{ textAlign: 'center' }}>Verificando sesión...</p>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
