@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { formatUsername } from '@/lib/utils';
 import styles from './UploadForm.module.css';
 
 // Utility to compress image on client side
@@ -103,7 +104,7 @@ export default function UploadForm({ onSubmit, compressImage: compressFn = compr
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const currentAuthor = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Usuario';
+    const currentAuthor = formatUsername(user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Usuario');
 
     return (
         <form className={styles.form} onSubmit={handleSubmit} role="form">

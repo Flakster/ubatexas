@@ -35,17 +35,42 @@ export default function AuthForm() {
         console.log('--- Intentando Autenticación (v2.1) ---');
 
         try {
-            const cleanDisplayName = displayName.trim();
-            const cleanEmail = email.trim();
+            const cleanEmail = email.trim(); // Moved this line up to be consistent
 
             if (isSignUp) {
-                // 1. Verificación proactiva
+                const rawDisplayName = displayName.trim();
+
+                // 1. Validaciones de formato
+                // - Empieza por letra
+                // - Solo letras y números
+                // - Entre 3 y 30 caracteres
+                const usernameRegex = /^[a-zA-Z][a-zA-Z0-9]{2,29}$/;
+
+                if (!rawDisplayName) {
+                    throw new Error('Por favor ingresa un nombre de usuario.');
+                }
+
+                if (rawDisplayName.length < 3) {
+                    throw new Error('El nombre de usuario debe tener al menos 3 caracteres.');
+                }
+
+                if (!/^[a-zA-Z]/.test(rawDisplayName)) {
+                    throw new Error('El nombre de usuario debe empezar por una letra.');
+                }
+
+                if (!usernameRegex.test(rawDisplayName)) {
+                    throw new Error('El nombre de usuario solo puede contener letras y números, sin espacios ni caracteres especiales, y máximo 30 caracteres.');
+                }
+
+                const cleanDisplayName = rawDisplayName.toUpperCase();
+
+                // 2. Verificación proactiva de disponibilidad
                 const isAvailable = await checkUsername(cleanDisplayName);
                 if (!isAvailable) {
                     throw new Error('Lo sentimos, este nombre de usuario ya está registrado. Por favor intenta con otro.');
                 }
 
-                // 2. Registro en Supabase Auth
+                // 3. Registro en Supabase Auth
                 const { error: signUpError } = await supabase.auth.signUp({
                     email: cleanEmail,
                     password,

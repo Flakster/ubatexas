@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { approvePhotoAction, rejectPhotoAction } from '@/app/actions';
+import { formatUsername } from '@/lib/utils';
 import styles from './ModerationList.module.css';
 
 export default function ModerationList({ initialPhotos }) {
@@ -49,7 +50,7 @@ export default function ModerationList({ initialPhotos }) {
                         <img src={photo.imageUrl} alt={photo.caption} />
                     </div>
                     <div className={styles.content}>
-                        <p className={styles.author}>Enviada por: <strong>{photo.author || 'Anónimo'}</strong></p>
+                        <p className={styles.author}>Enviada por: <strong>{photo.author ? formatUsername(photo.author) : 'Anónimo'}</strong></p>
                         <p className={styles.caption}>{photo.caption}</p>
                         <p className={styles.tag}>#{photo.eventTag}</p>
                         <div className={styles.actions}>
