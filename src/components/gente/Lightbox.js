@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { formatUsername } from '@/lib/utils';
 import styles from './Lightbox.module.css';
 
 export default function Lightbox({ photo, onClose }) {
@@ -24,7 +25,7 @@ export default function Lightbox({ photo, onClose }) {
                     <span className={styles.tag}>{photo.eventTag}</span>
                     <p className={styles.caption}>{photo.caption}</p>
                     <div className={styles.meta}>
-                        <span className={styles.author}>Publicado por @{photo.author}</span>
+                        <span className={styles.author}>Publicado por {formatUsername(photo.author)}</span>
                         <span className={styles.date}>{photo.date}</span>
                     </div>
                 </div>

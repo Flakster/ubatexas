@@ -158,7 +158,7 @@ export default function UploadForm({ onSubmit, compressImage: compressFn = compr
                         color: 'var(--color-primary)',
                         border: '1px solid var(--color-border)'
                     }}>
-                        @{currentAuthor}
+                        {currentAuthor}
                     </div>
                     <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
                         Vinculado a tu cuenta verificada.

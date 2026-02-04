@@ -15,7 +15,7 @@ export default function PhotoCard({ photo }) {
             <div className={styles.content}>
                 <p className={styles.caption}>{photo.caption}</p>
                 <div className={styles.meta}>
-                    <span className={styles.author}>@{formatUsername(photo.author)}</span>
+                    <span className={styles.author}>{formatUsername(photo.author)}</span>
                     <span className={styles.date}>{photo.date}</span>
                 </div>
             </div>
