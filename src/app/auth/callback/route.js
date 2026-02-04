@@ -5,6 +5,7 @@ export async function GET(request) {
     const requestUrl = new URL(request.url);
     const code = requestUrl.searchParams.get('code');
     const next = requestUrl.searchParams.get('next') ?? '/';
+    const type = requestUrl.searchParams.get('type');
 
     if (code) {
         const supabase = await createClient();
@@ -13,7 +14,12 @@ export async function GET(request) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (!error) {
-            // After successful verification, redirect to the page the user was trying to access
+            // If this is a password recovery flow, redirect to reset password page
+            if (type === 'recovery') {
+                return NextResponse.redirect(new URL('/auth/reset-password', request.url));
+            }
+
+            // Otherwise, redirect to the page the user was trying to access
             return NextResponse.redirect(new URL(next, request.url));
         } else {
             console.error('Auth verification error:', error);

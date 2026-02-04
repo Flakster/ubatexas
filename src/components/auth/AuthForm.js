@@ -11,6 +11,7 @@ export default function AuthForm() {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState(null);
     const [isSignUp, setIsSignUp] = useState(false);
+    const [isForgotPassword, setIsForgotPassword] = useState(false);
 
     const checkUsername = async (name) => {
         if (!name) return true;
@@ -124,10 +125,31 @@ export default function AuthForm() {
         }
     };
 
+    const handleResetPassword = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage(null);
+
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+                redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+            });
+            if (error) throw error;
+            setMessage({ type: 'success', text: 'Se ha enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.' });
+        } catch (error) {
+            console.error('Error in handleResetPassword:', error);
+            setMessage({ type: 'error', text: error.message || 'Error al enviar el correo de recuperación.' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>{isSignUp ? 'Únete a Ubatexas' : 'Bienvenido de nuevo'}</h2>
-            <form onSubmit={handleAuth} className={styles.form}>
+            <h2 className={styles.title}>
+                {isForgotPassword ? 'Recuperar contraseña' : (isSignUp ? 'Únete a Ubatexas' : 'Bienvenido de nuevo')}
+            </h2>
+            <form onSubmit={isForgotPassword ? handleResetPassword : handleAuth} className={styles.form}>
                 {isSignUp && (
                     <div className={styles.group}>
                         <label htmlFor="displayName">Nombre de usuario</label>
@@ -152,17 +174,31 @@ export default function AuthForm() {
                         required
                     />
                 </div>
-                <div className={styles.group}>
-                    <label htmlFor="password">Contraseña</label>
-                    <input
-                        id="password"
-                        type="password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
+                {!isForgotPassword && (
+                    <div className={styles.group}>
+                        <label htmlFor="password">Contraseña</label>
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                )}
+
+                {!isSignUp && !isForgotPassword && (
+                    <div className={styles.forgotAction}>
+                        <button
+                            type="button"
+                            onClick={() => { setIsForgotPassword(true); setMessage(null); }}
+                            className={styles.linkBtn}
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </button>
+                    </div>
+                )}
 
                 {message && (
                     <div className={`${styles.message} ${styles[message.type]}`}>
@@ -171,16 +207,24 @@ export default function AuthForm() {
                 )}
 
                 <button className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-                    {loading ? 'Cargando...' : isSignUp ? 'Registrarse' : 'Entrar'}
+                    {loading ? 'Cargando...' : (isForgotPassword ? 'Enviar enlace' : (isSignUp ? 'Registrarse' : 'Entrar'))}
                 </button>
             </form>
 
             <p className={styles.toggle}>
-                {isSignUp ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}
-                {' '}
-                <button onClick={() => setIsSignUp(!isSignUp)} className={styles.linkBtn}>
-                    {isSignUp ? 'Inicia sesión' : 'Regístrate aquí'}
-                </button>
+                {isForgotPassword ? (
+                    <button onClick={() => { setIsForgotPassword(false); setMessage(null); }} className={styles.linkBtn}>
+                        Volver al inicio de sesión
+                    </button>
+                ) : (
+                    <>
+                        {isSignUp ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}
+                        {' '}
+                        <button onClick={() => { setIsSignUp(!isSignUp); setMessage(null); }} className={styles.linkBtn}>
+                            {isSignUp ? 'Inicia sesión' : 'Regístrate aquí'}
+                        </button>
+                    </>
+                )}
             </p>
         </div>
     );

@@ -79,3 +79,13 @@
 .linkBtn:hover {
     text-decoration: underline;
 }
+
+.forgotAction {
+    text-align: right;
+    margin-top: -0.5rem;
+}
+
+.forgotAction .linkBtn {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
