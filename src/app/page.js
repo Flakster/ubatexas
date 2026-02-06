@@ -26,7 +26,7 @@ export default async function Home() {
             <p className={styles.subtitle}>
               El Escenario de la Provincia.
               <br />
-              Donde la tradición se encuentra con la aspiración.
+              Donde la tradición se encuentra con el progreso.
             </p>
             <div className={styles.actions}>
               <Link href="/agenda" className="btn btn-accent">Ver Agenda 2026</Link>
