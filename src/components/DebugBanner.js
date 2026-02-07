@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 
 export default function DebugBanner() {
     const [debugInfo, setDebugInfo] = useState({ hash: '', search: '', lastEvent: null });
+    const [session, setSession] = useState(null);
 
     useEffect(() => {
         setDebugInfo({
@@ -13,9 +14,17 @@ export default function DebugBanner() {
             lastEvent: null
         });
 
+        // Get initial session
+        const getSession = async () => {
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            setSession(currentSession);
+        };
+        getSession();
+
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             console.log('Home Auth Event:', event);
             setDebugInfo(prev => ({ ...prev, lastEvent: event }));
+            setSession(session);
 
             if (event === 'PASSWORD_RECOVERY') {
                 window.location.href = '/auth/reset-password';
@@ -25,7 +34,7 @@ export default function DebugBanner() {
         return () => subscription.unsubscribe();
     }, []);
 
-    if (!debugInfo.hash && !debugInfo.search && !debugInfo.lastEvent) return null;
+    if (!debugInfo.hash && !debugInfo.search && !debugInfo.lastEvent && !session) return null;
 
     return (
         <div style={{ background: '#000', color: '#0f0', padding: '10px', fontSize: '12px', fontFamily: 'monospace', zIndex: 9999, position: 'relative' }}>
@@ -39,5 +48,4 @@ export default function DebugBanner() {
             <p>Last Sign In: {session?.user?.last_sign_in_at || '(none)'}</p>
         </div>
     );
-
 }
