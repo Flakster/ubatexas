@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://ubatexas.com
+
+# Sitemaps
+Sitemap: https://ubatexas.com/sitemap.xml
