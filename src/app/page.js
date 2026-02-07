@@ -1,4 +1,4 @@
-```
+
 import Link from 'next/link';
 import { Suspense, useState, useEffect } from 'react';
 import GalleryGrid from '@/components/gente/GalleryGrid';
@@ -6,6 +6,8 @@ import { getEvents } from '@/lib/events';
 import { supabase } from '@/lib/supabase';
 import styles from './page.module.css';
 
+
+import DebugBanner from '@/components/DebugBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +17,9 @@ export default async function Home() {
 
   return (
     <>
+      <DebugBanner />
       <div className={styles.main}>
+
         <section className={styles.hero}>
 
           <div className="container">
@@ -36,7 +40,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className={`container ${ styles.section } `}>
+        <section className={`container ${styles.section} `}>
           <div className={styles.sectionHeader}>
             <h2>Próximos Eventos</h2>
             <Link href="/agenda" className={styles.viewAll}>Ver todo &rarr;</Link>
