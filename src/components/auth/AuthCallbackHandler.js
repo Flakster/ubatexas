@@ -135,7 +135,11 @@ export default function AuthCallbackHandler() {
             alignItems: 'center',
             minHeight: '60vh',
             flexDirection: 'column',
-            gap: '1rem'
+            gap: '1rem',
+            padding: '2rem',
+            maxWidth: '600px',
+            margin: '0 auto',
+            wordBreak: 'break-all'
         }}>
             <div className="spinner" style={{
                 border: '4px solid #f3f3f3',
@@ -145,7 +149,24 @@ export default function AuthCallbackHandler() {
                 height: '40px',
                 animation: 'spin 1s linear infinite'
             }}></div>
-            <p>{status}</p>
+            <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{status}</p>
+
+            {/* Debug Info Section */}
+            <div style={{
+                marginTop: '2rem',
+                padding: '1rem',
+                background: '#f5f5f5',
+                borderRadius: '8px',
+                fontSize: '0.8rem',
+                width: '100%',
+                color: '#333'
+            }}>
+                <p><strong>Debug Info:</strong></p>
+                <p>URL: {typeof window !== 'undefined' ? window.location.pathname + window.location.search : ''}</p>
+                <p>Hash: {typeof window !== 'undefined' ? window.location.hash : ''}</p>
+                <p>Params: {JSON.stringify(Object.fromEntries(searchParams.entries()))}</p>
+            </div>
+
             <style jsx>{`
                 @keyframes spin {
                     0% { transform: rotate(0deg); }
