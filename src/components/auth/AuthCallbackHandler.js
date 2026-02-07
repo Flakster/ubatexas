@@ -26,32 +26,39 @@ export default function AuthCallbackHandler() {
             }
 
             try {
+                // Check if this is a password recovery flow BEFORE consuming the code
+                // Supabase adds a hash fragment with type=recovery for password resets
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const type = searchParams.get('type') || hashParams.get('type');
+
+                console.log('Pre-exchange params check:', { type, code });
+
                 // Exchange the code for a session
                 const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
                 if (exchangeError) {
                     console.error('Error exchanging code:', exchangeError);
+
+                    // If we have a recovery type but code exchange failed (maybe used?), 
+                    // we should still try to let them reset if they have a session
+                    if (type === 'recovery') {
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (session) {
+                            router.push('/auth/reset-password');
+                            return;
+                        }
+                    }
+
                     setError('Error al verificar el enlace');
                     setTimeout(() => router.push('/login'), 2000);
                     return;
                 }
 
-                // Check if this is a password recovery flow
-                // Supabase adds a hash fragment with type=recovery for password resets
-                const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                const type = searchParams.get('type') || hashParams.get('type');
-
-
-                console.log('Hash params:', Object.fromEntries(hashParams.entries()));
-                console.log('Type from hash:', type);
-
                 if (type === 'recovery') {
                     console.log('✅ Recovery detected, redirecting to reset password');
-                    // This is a password recovery, redirect to reset password page
                     router.push('/auth/reset-password');
                 } else {
                     console.log('❌ No recovery type, redirecting to home');
-                    // Regular email verification, redirect to home
                     router.push('/');
                 }
             } catch (err) {
@@ -59,6 +66,7 @@ export default function AuthCallbackHandler() {
                 setError('Error inesperado');
                 setTimeout(() => router.push('/login'), 2000);
             }
+
         };
 
         handleCallback();
