@@ -12,6 +12,8 @@ export default function AuthForm() {
     const [message, setMessage] = useState(null);
     const [isSignUp, setIsSignUp] = useState(false);
     const [isForgotPassword, setIsForgotPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
 
     const checkUsername = async (name) => {
         if (!name) return true;
@@ -179,14 +181,25 @@ export default function AuthForm() {
                         <label htmlFor="password">Contraseña</label>
                         <input
                             id="password"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem', gap: '0.5rem', fontSize: '0.9rem' }}>
+                            <input
+                                type="checkbox"
+                                id="showPassword"
+                                checked={showPassword}
+                                onChange={(e) => setShowPassword(e.target.checked)}
+                                style={{ width: 'auto', margin: 0 }}
+                            />
+                            <label htmlFor="showPassword" style={{ margin: 0, fontWeight: 'normal', cursor: 'pointer' }}>Mostrar contraseña</label>
+                        </div>
                     </div>
                 )}
+
 
                 {!isSignUp && !isForgotPassword && (
                     <div className={styles.forgotAction}>

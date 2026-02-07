@@ -11,7 +11,9 @@ export default function ResetPasswordForm() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [checkingSession, setCheckingSession] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+
 
     // Check if user has an active session and listen for changes
     useEffect(() => {
@@ -106,7 +108,7 @@ export default function ResetPasswordForm() {
                     <label htmlFor="password">Nueva contraseña</label>
                     <input
                         id="password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -117,13 +119,24 @@ export default function ResetPasswordForm() {
                     <label htmlFor="confirmPassword">Confirmar contraseña</label>
                     <input
                         id="confirmPassword"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
                     />
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem', gap: '0.5rem', fontSize: '0.9rem' }}>
+                        <input
+                            type="checkbox"
+                            id="showResetPassword"
+                            checked={showPassword}
+                            onChange={(e) => setShowPassword(e.target.checked)}
+                            style={{ width: 'auto', margin: 0 }}
+                        />
+                        <label htmlFor="showResetPassword" style={{ margin: 0, fontWeight: 'normal', cursor: 'pointer' }}>Mostrar contraseñas</label>
+                    </div>
                 </div>
+
 
                 {message && (
                     <div className={`${styles.message} ${styles[message.type]}`}>
