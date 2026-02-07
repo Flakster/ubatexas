@@ -3,6 +3,8 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { AuthProvider } from '@/context/AuthContext';
+import { Suspense } from 'react';
+import AuthRecoveryDetector from '@/components/auth/AuthRecoveryDetector';
 
 const inter = Inter({ subsets: ["latin"] });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-serif' });
@@ -20,6 +22,9 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body>
         <AuthProvider>
+          <Suspense fallback={null}>
+            <AuthRecoveryDetector />
+          </Suspense>
           <Header />
           <main>{children}</main>
           <Footer />
