@@ -1,9 +1,8 @@
 
 import Link from 'next/link';
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense } from 'react';
 import GalleryGrid from '@/components/gente/GalleryGrid';
 import { getEvents } from '@/lib/events';
-import { supabase } from '@/lib/supabase';
 import styles from './page.module.css';
 
 
