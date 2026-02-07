@@ -134,8 +134,9 @@ export default function AuthForm() {
 
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-                redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+                redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset-password`,
             });
+
             if (error) throw error;
             setMessage({ type: 'success', text: 'Se ha enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.' });
         } catch (error) {

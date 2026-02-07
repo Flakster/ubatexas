@@ -8,17 +8,19 @@ export default function AuthCallbackHandler() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [status, setStatus] = useState('Verificando...');
+    const [error, setError] = useState < string | null > (null);
 
     useEffect(() => {
         const handleCallback = async () => {
             const code = searchParams.get('code');
+            const next = searchParams.get('next');
             const hashParams = new URLSearchParams(window.location.hash.substring(1));
             const typeParam = searchParams.get('type') || hashParams.get('type');
 
             // Flag to track if we've handled the redirect
             let handled = false;
 
-            console.log('Callback params:', { code, typeParam });
+            console.log('Callback params:', { code, next, typeParam });
 
             // Setup listener for recovery event - DO THIS FIRST
             const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -65,12 +67,20 @@ export default function AuthCallbackHandler() {
                     }
 
                     // Success handling
+                    if (next) {
+                        console.log('Next param detected -> Redirecting to:', next);
+                        handled = true;
+                        router.push(next);
+                        return;
+                    }
+
                     if (typeParam === 'recovery') {
                         console.log('Type param is recovery -> Reset Password');
                         handled = true;
                         router.push('/auth/reset-password');
                         return;
                     }
+
 
                     // If no explicit type, wait briefly for event listener or redirect home
                     setStatus('Completando inicio de sesión...');
