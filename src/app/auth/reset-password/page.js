@@ -1,10 +1,13 @@
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import { Suspense } from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: 'Restablecer Contraseña | Ubatexas',
     description: 'Ingresa tu nueva contraseña para recuperar el acceso a tu cuenta.',
 };
+
 
 export default function ResetPasswordPage() {
     return (
