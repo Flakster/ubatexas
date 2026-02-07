@@ -29,10 +29,15 @@ export default function DebugBanner() {
 
     return (
         <div style={{ background: '#000', color: '#0f0', padding: '10px', fontSize: '12px', fontFamily: 'monospace', zIndex: 9999, position: 'relative' }}>
-            <p><strong>DEBUG BANNER</strong></p>
+            <p><strong>DEBUG BANNER v2</strong></p>
             <p>Hash: {debugInfo.hash || '(none)'}</p>
             <p>Search: {debugInfo.search || '(none)'}</p>
             <p>Last Event: {debugInfo.lastEvent || '(waiting)'}</p>
+            <hr style={{ borderColor: '#333', margin: '5px 0' }} />
+            <p>User: {session?.user?.email || '(no user)'}</p>
+            <p>Recovery Sent At: {session?.user?.recovery_sent_at || '(none)'}</p>
+            <p>Last Sign In: {session?.user?.last_sign_in_at || '(none)'}</p>
         </div>
     );
+
 }
