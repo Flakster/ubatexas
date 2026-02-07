@@ -13,64 +13,89 @@ export default function AuthCallbackHandler() {
         const handleCallback = async () => {
             const code = searchParams.get('code');
 
-            // Debug logging
-            console.log('=== Password Reset Debug ===');
-            console.log('Full URL:', window.location.href);
-            console.log('Hash:', window.location.hash);
-            console.log('Search params code:', code);
+            // Setup listener for recovery event
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+                console.log('Auth state change in callback:', event);
+                if (event === 'PASSWORD_RECOVERY') {
+                    console.log('🔒 Password recovery event detected!');
+                    router.push('/auth/reset-password');
+                }
+            });
 
             if (!code) {
-                setError('No se encontró código de verificación');
-                setTimeout(() => router.push('/login'), 2000);
-                return;
-            }
-
-            try {
-                // Check if this is a password recovery flow BEFORE consuming the code
-                // Supabase adds a hash fragment with type=recovery for password resets
+                // If no code, maybe we're already logged in or implicit flow?
+                // Check hash for error
                 const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                const type = searchParams.get('type') || hashParams.get('type');
-
-                console.log('Pre-exchange params check:', { type, code });
-
-                // Exchange the code for a session
-                const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-
-                if (exchangeError) {
-                    console.error('Error exchanging code:', exchangeError);
-
-                    // If we have a recovery type but code exchange failed (maybe used?), 
-                    // we should still try to let them reset if they have a session
-                    if (type === 'recovery') {
-                        const { data: { session } } = await supabase.auth.getSession();
-                        if (session) {
-                            router.push('/auth/reset-password');
-                            return;
-                        }
-                    }
-
-                    setError('Error al verificar el enlace');
-                    setTimeout(() => router.push('/login'), 2000);
+                if (hashParams.get('error')) {
+                    setError(hashParams.get('error_description') || 'Error en autenticación');
+                    return;
+                }
+                // If nothing, check hash for type without code (implicit)
+                const type = hashParams.get('type');
+                if (type === 'recovery') {
+                    router.push('/auth/reset-password');
                     return;
                 }
 
-                if (type === 'recovery') {
-                    console.log('✅ Recovery detected, redirecting to reset password');
-                    router.push('/auth/reset-password');
-                } else {
-                    console.log('❌ No recovery type, redirecting to home');
-                    router.push('/');
+                if (!searchParams.toString() && !window.location.hash) {
+                    // Only error if completely empty URL
+                    // setError('Enlace inválido o expirado');
+                    // setTimeout(() => router.push('/login'), 2000);
+                    // return;
+
+                    // Actually, just let it pass to render loading state or catch via listener
                 }
-            } catch (err) {
-                console.error('Callback error:', err);
-                setError('Error inesperado');
-                setTimeout(() => router.push('/login'), 2000);
             }
 
+            if (code) {
+                try {
+                    // Pre-check params
+                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                    const type = searchParams.get('type') || hashParams.get('type');
+
+                    // Exchange code
+                    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
+                    if (exchangeError) {
+                        console.error('Exchange error:', exchangeError);
+                        // If we failed but it looked like recovery, try checking session anyway
+                        if (type === 'recovery') {
+                            const { data: { session } } = await supabase.auth.getSession();
+                            if (session) {
+                                router.push('/auth/reset-password');
+                                return;
+                            }
+                        }
+                        setError('Error al procesar el código');
+                        setTimeout(() => router.push('/login'), 2000);
+                        return;
+                    }
+
+                    // Success!
+                    // If the event listener above didn't catch it yet (race condition?), check type manually
+                    if (type === 'recovery') {
+                        router.push('/auth/reset-password');
+                    } else {
+                        // Allow a small delay for the event to fire if it's going to
+                        setTimeout(() => {
+                            // detailed check if we are still on this page
+                            router.push('/');
+                        }, 500);
+                    }
+                } catch (err) {
+                    console.error('Callback process error:', err);
+                    setError('Error interno');
+                }
+            }
+
+            return () => {
+                subscription.unsubscribe();
+            };
         };
 
         handleCallback();
     }, [router, searchParams]);
+
 
     if (error) {
         return (
