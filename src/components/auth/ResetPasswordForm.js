@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './AuthForm.module.css';
 
 export default function ResetPasswordForm() {
@@ -15,9 +15,24 @@ export default function ResetPasswordForm() {
     const router = useRouter();
 
 
+    const searchParams = useSearchParams(); // imports need to be updated
+
     // Check if user has an active session and listen for changes
     useEffect(() => {
         const checkSession = async () => {
+            // First, if there's a code in the URL, try to exchange it
+            const code = searchParams.get('code');
+            if (code) {
+                const { error } = await supabase.auth.exchangeCodeForSession(code);
+                if (error) {
+                    setMessage({ type: 'error', text: 'Error al verificar el enlace: ' + error.message });
+                    setTimeout(() => router.push('/login'), 3000);
+                    return;
+                }
+                // Determine if this is recovery flow
+                // If we just exchanged a code, we are likely logged in now.
+            }
+
             const { data: { session } } = await supabase.auth.getSession();
 
             if (!session) {
@@ -30,6 +45,7 @@ export default function ResetPasswordForm() {
         };
 
         checkSession();
+
 
         // Listen for auth state changes (like logout)
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
