@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getEvents } from '@/lib/events';
-import AuthRecoveryDetector from '@/components/auth/AuthRecoveryDetector';
 import styles from './page.module.css';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -12,11 +12,9 @@ export default async function Home() {
 
   return (
     <>
-      <Suspense fallback={null}>
-        <AuthRecoveryDetector />
-      </Suspense>
       <div className={styles.main}>
         <section className={styles.hero}>
+
           <div className="container">
             <h1 className={styles.title}>
               <span className={styles.supertext}>Bienvenido a</span>

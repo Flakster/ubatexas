@@ -39,7 +39,8 @@ export default function AuthCallbackHandler() {
                 // Check if this is a password recovery flow
                 // Supabase adds a hash fragment with type=recovery for password resets
                 const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                const type = hashParams.get('type');
+                const type = searchParams.get('type') || hashParams.get('type');
+
 
                 console.log('Hash params:', Object.fromEntries(hashParams.entries()));
                 console.log('Type from hash:', type);
