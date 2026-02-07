@@ -15,18 +15,14 @@ export default function AuthRecoveryDetector() {
             const next = searchParams.get('next');
             const code = searchParams.get('code');
 
-            console.log('Global Recovery Detector:', { type, next, code, path: window.location.pathname });
-
             // 1. Check for explicit recovery type
             if (type === 'recovery') {
-                console.log('Recovery type detected -> Redirecting to reset password');
                 router.push('/auth/reset-password?code=' + (code || ''));
                 return;
             }
 
             // 2. Check for explicit next param pointing to reset password
             if (next && next.includes('/auth/reset-password')) {
-                console.log('Next param is reset password -> Redirecting');
                 router.push(next + (code ? `?code=${code}` : ''));
                 return;
             }

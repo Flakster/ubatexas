@@ -5,9 +5,6 @@ import GalleryGrid from '@/components/gente/GalleryGrid';
 import { getEvents } from '@/lib/events';
 import styles from './page.module.css';
 
-
-import DebugBanner from '@/components/DebugBanner';
-
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
@@ -16,7 +13,6 @@ export default async function Home() {
 
   return (
     <>
-      <DebugBanner />
       <div className={styles.main}>
 
         <section className={styles.hero}>
