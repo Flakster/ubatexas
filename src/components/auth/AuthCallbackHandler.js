@@ -82,17 +82,13 @@ export default function AuthCallbackHandler() {
                     }
 
 
-                    // If no explicit type, wait briefly for event listener or redirect home
-                    setStatus('Completando inicio de sesión...');
+                    // If no explicit type, STOP REDIRECTING to home automatically
+                    // Let the user see the debug info
+                    setStatus('Esperando detección manual o evento...');
 
-                    // We need to wait a bit because the onAuthStateChange might fire 
-                    // AFTER the code exchange promise resolves
-                    setTimeout(() => {
-                        if (!handled) {
-                            console.log('No recovery detected after wait -> Home');
-                            router.push('/');
-                        }
-                    }, 2000);
+                    // console.log('No recovery detected after wait -> Home');
+                    // router.push('/');
+
 
                 } catch (err) {
                     console.error('Process error:', err);
@@ -167,7 +163,17 @@ export default function AuthCallbackHandler() {
                 <p>Params: {JSON.stringify(Object.fromEntries(searchParams.entries()))}</p>
             </div>
 
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button onClick={() => router.push('/auth/reset-password')} style={{ padding: '0.5rem 1rem', background: '#333', color: 'white', borderRadius: '4px' }}>
+                    Ir a Reset Password
+                </button>
+                <button onClick={() => router.push('/')} style={{ padding: '0.5rem 1rem', border: '1px solid #333', borderRadius: '4px' }}>
+                    Ir a Home
+                </button>
+            </div>
+
             <style jsx>{`
+
                 @keyframes spin {
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }
