@@ -38,6 +38,20 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // 1. Creamos el objeto JSON-LD fuera del return para que sea código limpio
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Ubatexas",
+    "url": "https://ubatexas.com",
+    "logo": "https://ubatexas.com/favicon.svg",
+    "description": "Medio de comunicación digital, lifestyle y turismo en la provincia de Ubaté.",
+    "sameAs": [
+      "https://www.instagram.com/ubatexasoficial/",
+      "https://www.facebook.com/profile.php?id=61587895797422"
+    ]
+  };
+
   return (
     <html lang="es" className={`${inter.className} ${playfair.variable}`}>
       <body>
@@ -49,22 +63,13 @@ export default function RootLayout({ children }) {
           <main>{children}</main>
           <Footer />
         </AuthProvider>
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "Ubatexas",
-          "url": "https://ubatexas.com",
-          "logo": "https://ubatexas.com/favicon.svg",
-          "description": "Medio de comunicación digital, lifestyle y turismo en la provincia de Ubaté.",
-          "sameAs": [
-            "https://www.instagram.com/ubatexasoficial/",
-            "https://www.facebook.com/profile.php?id=61587895797422"
-          ]
-        }
-        </script>
+
+        {/* 2. Insertamos el script usando dangerouslySetInnerHTML para evitar errores de parsing */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
       </body>
     </html>
   );
 }
-
