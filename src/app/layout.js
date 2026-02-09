@@ -49,7 +49,22 @@ export default function RootLayout({ children }) {
           <main>{children}</main>
           <Footer />
         </AuthProvider>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Ubatexas",
+          "url": "https://ubatexas.com",
+          "logo": "https://ubatexas.com/favicon.svg",
+          "description": "Medio de comunicación digital, lifestyle y turismo en la provincia de Ubaté.",
+          "sameAs": [
+            "https://www.instagram.com/ubatexasoficial/",
+            "https://www.facebook.com/profile.php?id=61587895797422"
+          ]
+        }
+        </script>
       </body>
     </html>
   );
 }
+
