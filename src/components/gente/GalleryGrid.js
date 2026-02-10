@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext'; // Verify path
-import { getUserLikedPhotoIds, toggleLike, getPhotoLikes } from '@/lib/galleries';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { getUserLikedPhotoIds, toggleLike, getPhotoLikes, deletePhoto } from '@/lib/galleries';
 import PhotoCard from './PhotoCard';
 import Lightbox from './Lightbox';
 import TagFilter from './TagFilter';
@@ -16,6 +16,7 @@ export default function GalleryGrid({ photos }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const [localPhotos, setLocalPhotos] = useState(photos || []);
 
     const { user } = useAuth();
     const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -32,6 +33,7 @@ export default function GalleryGrid({ photos }) {
     // Initialize counts from photos
     useEffect(() => {
         if (photos) {
+            setLocalPhotos(photos);
             const counts = {};
             photos.forEach(p => {
                 counts[p.id] = p.likes || 0;
@@ -86,6 +88,25 @@ export default function GalleryGrid({ photos }) {
         }
     };
 
+    const handleDelete = async (photoToDelete) => {
+        try {
+            // Optimistic update
+            setLocalPhotos(prev => prev.filter(p => p.id !== photoToDelete.id));
+
+            await deletePhoto(photoToDelete.id);
+
+            // If the deleted photo was selected in lightbox, close it
+            if (selectedPhoto?.id === photoToDelete.id) {
+                handlePhotoSelect(null);
+            }
+        } catch (error) {
+            console.error('Error deleting photo:', error);
+            alert('No se pudo eliminar la foto. Intenta de nuevo.');
+            // Revert state if necessary (or just refresh)
+            setLocalPhotos(localPhotos);
+        }
+    };
+
     const handleShowLikes = async (photo) => {
         setLoadingLikes(true);
         setShowLikesModal(true);
@@ -132,14 +153,14 @@ export default function GalleryGrid({ photos }) {
 
     // Extract unique tags and clean them
     const tags = Array.from(new Set(
-        photos
+        localPhotos
             .map(p => p.eventTag?.trim())
             .filter(tag => tag && tag.length > 0)
     )).sort();
 
     // Filter photos based on active tag AND search query
     const filteredPhotos = useMemo(() => {
-        let results = photos || [];
+        let results = localPhotos || [];
 
         // 1. Filter by active tag
         if (activeTag) {
@@ -196,6 +217,7 @@ export default function GalleryGrid({ photos }) {
                                 e.stopPropagation();
                                 handleShowLikes(photo);
                             }}
+                            onDelete={handleDelete}
                             currentUser={user}
                         />
 

@@ -116,6 +116,30 @@
         margin-top: 0.5rem;
         text-align: center;
     }
+
+    .adminLink a {
+        color: var(--color-accent) !important;
+        font-weight: 700 !important;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ef4444;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        border-radius: 10px;
+        line-height: 1;
+    }
+
 }
 
 .navActions {

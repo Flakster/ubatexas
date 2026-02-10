@@ -28,7 +28,6 @@ export async function getPhotos(supabaseClient) {
         date: new Date(photo.created_at).toLocaleDateString('es-CO'),
         likes: photo.likes ? photo.likes[0].count : 0,
         user_id: photo.user_id, // Ensure we have this for ownership check
-
     }));
 }
 
@@ -76,6 +75,21 @@ export async function getPendingPhotos(supabaseClient) {
     }));
 }
 
+export async function getPendingPhotosCount(supabaseClient) {
+    const client = supabaseClient || supabase;
+    const { count, error } = await client
+        .from('photos')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
+
+    if (error) {
+        console.error('Error fetching pending photos count:', error);
+        return 0;
+    }
+
+    return count || 0;
+}
+
 export async function updatePhotoStatus(id, status, supabaseClient) {
     const client = supabaseClient || supabase;
     const { data, error } = await client
@@ -92,6 +106,35 @@ export async function updatePhotoStatus(id, status, supabaseClient) {
 
 export async function deletePhoto(id, supabaseClient) {
     const client = supabaseClient || supabase;
+
+    // 1. Get the photon to get the image URL first
+    const { data: photo, error: fetchError } = await client
+        .from('photos')
+        .select('image_url')
+        .eq('id', id)
+        .single();
+
+    if (fetchError) {
+        throw new Error(fetchError.message);
+    }
+
+    // 2. Extract filename from URL (assuming format: .../object/public/bucket/folder/filename)
+    const urlParts = photo.image_url.split('/');
+    const fileName = urlParts[urlParts.length - 1];
+    const folder = urlParts[urlParts.length - 2];
+
+    if (fileName && folder) {
+        // 3. Delete from Storage
+        const { error: storageError } = await client.storage
+            .from('ubatexas-public')
+            .remove([`${folder}/${fileName}`]);
+
+        if (storageError) {
+            console.error('Error deleting file from storage:', storageError);
+        }
+    }
+
+    // 4. Delete from DB
     const { data, error } = await client
         .from('photos')
         .delete()
@@ -159,7 +202,6 @@ export async function getPhotoLikes(photoId, supabaseClient) {
     const userIds = likes.map(l => l.user_id);
 
     // 2. Fetch profiles for these users
-    // Assuming 'profiles' table has 'id' matching 'auth.users.id' and 'display_name'
     const { data: profiles, error: profilesError } = await client
         .from('profiles')
         .select('display_name')
@@ -186,4 +228,3 @@ export async function getUserLikedPhotoIds(userId, supabaseClient) {
     }
     return data.map(item => item.photo_id);
 }
-

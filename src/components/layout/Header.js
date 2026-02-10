@@ -4,11 +4,27 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { formatUsername } from '@/lib/utils';
+import { isAdmin } from '@/lib/auth-utils';
+import { getPendingPhotosCount } from '@/lib/galleries';
 import styles from './Header.module.css';
+import { useEffect } from 'react';
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [pendingCount, setPendingCount] = useState(0);
     const { user, signOut } = useAuth();
+
+    useEffect(() => {
+        const fetchPendingCount = async () => {
+            if (isAdmin(user)) {
+                const count = await getPendingPhotosCount();
+                setPendingCount(count);
+            } else {
+                setPendingCount(0);
+            }
+        };
+        fetchPendingCount();
+    }, [user]);
 
     return (
         <header className={styles.header}>
@@ -40,6 +56,16 @@ export default function Header() {
                         <li onClick={() => setIsMenuOpen(false)}><Link href="/gente">Gente</Link></li>
                         <li><Link href="/territorio" onClick={() => setIsMenuOpen(false)}>Territorio</Link></li>
                         <li><Link href="/negocios" onClick={() => setIsMenuOpen(false)}>Negocios</Link></li>
+                        {isAdmin(user) && (
+                            <li className={styles.adminLink} onClick={() => setIsMenuOpen(false)}>
+                                <Link href="/admin/moderacion">
+                                    Moderación
+                                    {pendingCount > 0 && (
+                                        <span className={styles.badge}>{pendingCount}</span>
+                                    )}
+                                </Link>
+                            </li>
+                        )}
                         <li>
                             {user ? (
                                 <div className={styles.userInfo}>

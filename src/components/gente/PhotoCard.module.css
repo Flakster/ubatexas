@@ -116,3 +116,23 @@
 .likeCount.clickable:hover {
     color: var(--color-secondary);
 }
+
+.deleteBtn {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.deleteBtn:hover {
+    background-color: #fee2e2;
+    color: #ef4444;
+    opacity: 1;
+}
