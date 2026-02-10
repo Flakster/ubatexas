@@ -30,11 +30,20 @@ export const metadata = {
     siteName: 'Ubatexas',
     locale: 'es_CO',
     type: 'website',
+    images: [
+      {
+        url: '/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Ubatexas Logo',
+      }
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Ubatexas',
     description: 'Digital Media & Lifestyle en la Provincia de Ubaté.',
+    images: ['/logo.png'],
   },
 };
 

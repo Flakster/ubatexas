@@ -7,6 +7,7 @@ import { getUserLikedPhotoIds, toggleLike, getPhotoLikes } from '@/lib/galleries
 import PhotoCard from './PhotoCard';
 import Lightbox from './Lightbox';
 import TagFilter from './TagFilter';
+import SearchBar from './SearchBar';
 import LikesListModal from './LikesListModal';
 import styles from './GalleryGrid.module.css';
 
@@ -19,6 +20,7 @@ export default function GalleryGrid({ photos }) {
     const { user } = useAuth();
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [activeTag, setActiveTag] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Likes State
     const [likedPhotoIds, setLikedPhotoIds] = useState(new Set());
@@ -135,18 +137,41 @@ export default function GalleryGrid({ photos }) {
             .filter(tag => tag && tag.length > 0)
     )).sort();
 
-    // Filter photos based on active tag
-    const filteredPhotos = activeTag
-        ? photos.filter(p => p.eventTag?.trim() === activeTag)
-        : photos;
+    // Filter photos based on active tag AND search query
+    const filteredPhotos = useMemo(() => {
+        let results = photos || [];
+
+        // 1. Filter by active tag
+        if (activeTag) {
+            results = results.filter(p => p.eventTag?.trim() === activeTag);
+        }
+
+        // 2. Filter by search query (tag, author, caption)
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase().trim();
+            results = results.filter(p =>
+                (p.eventTag && p.eventTag.toLowerCase().includes(q)) ||
+                (p.author && p.author.toLowerCase().includes(q)) ||
+                (p.caption && p.caption.toLowerCase().includes(q))
+            );
+        }
+
+        return results;
+    }, [photos, activeTag, searchQuery]);
 
     return (
         <>
+            <SearchBar onSearch={setSearchQuery} />
+
             {tags.length > 0 && (
                 <TagFilter
                     tags={tags}
                     activeTag={activeTag}
-                    onTagChange={setActiveTag}
+                    onTagChange={(tag) => {
+                        setActiveTag(tag);
+                        // Optional: clear search when picking a tag? 
+                        // Usually better to keep both for additive filtering.
+                    }}
                 />
             )}
 

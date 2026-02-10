@@ -3,7 +3,7 @@
 }
 
 .hero {
-  background: linear-gradient(rgba(27, 77, 62, 0.9), rgba(27, 77, 62, 0.7)), url('https://placehold.co/1200x600/1B4D3E/FFFFFF/png?text=Paisaje+Ubat%C3%A9');
+  background: linear-gradient(rgba(27, 77, 62, 0.7), rgba(27, 77, 62, 0.5)), url('/images/hero-landscape.png');
   background-size: cover;
   background-position: center;
   color: white;
