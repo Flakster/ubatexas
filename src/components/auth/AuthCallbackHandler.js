@@ -8,7 +8,7 @@ export default function AuthCallbackHandler() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [status, setStatus] = useState('Verificando...');
-    const [error, setError] = useState < string | null > (null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const handleCallback = async () => {
