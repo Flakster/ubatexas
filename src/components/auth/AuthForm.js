@@ -13,6 +13,7 @@ export default function AuthForm() {
     const [isSignUp, setIsSignUp] = useState(false);
     const [isForgotPassword, setIsForgotPassword] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [acceptedTerms, setAcceptedTerms] = useState(false); // Nuevo estado para T&C
 
 
     const checkUsername = async (name) => {
@@ -84,7 +85,9 @@ export default function AuthForm() {
                     options: {
                         emailRedirectTo: `${window.location.origin}/auth/callback`,
                         data: {
-                            display_name: cleanDisplayName
+                            display_name: cleanDisplayName,
+                            accepted_terms: true,
+                            accepted_at: new Date().toISOString()
                         }
                     },
                 });
@@ -204,6 +207,25 @@ export default function AuthForm() {
                     </div>
                 )}
 
+                {isSignUp && (
+                    <div className={styles.checkboxGroup}>
+                        <div className={styles.checkboxWrapper}>
+                            <input
+                                type="checkbox"
+                                id="acceptTerms"
+                                checked={acceptedTerms}
+                                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                                required
+                                className={styles.checkbox}
+                            />
+                            <label htmlFor="acceptTerms" className={styles.checkboxLabel}>
+                                Acepto los <a href="/terminos" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a>, la
+                                política de limpieza y el tratamiento de datos (Habeas Data).
+                            </label>
+                        </div>
+                    </div>
+                )}
+
 
                 {!isSignUp && !isForgotPassword && (
                     <div className={styles.forgotAction}>
@@ -223,7 +245,11 @@ export default function AuthForm() {
                     </div>
                 )}
 
-                <button className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+                <button
+                    className="btn btn-primary"
+                    style={{ width: '100%' }}
+                    disabled={loading || (isSignUp && !acceptedTerms)}
+                >
                     {loading ? 'Cargando...' : (isForgotPassword ? 'Enviar enlace' : (isSignUp ? 'Registrarse' : 'Entrar'))}
                 </button>
             </form>
