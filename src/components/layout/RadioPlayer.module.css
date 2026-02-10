@@ -1,0 +1,132 @@
+.container {
+    position: fixed;
+    bottom: var(--spacing-sm);
+    right: var(--spacing-sm);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-sm);
+}
+
+/* El Botón Flotante */
+.trigger {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    border: 2px solid var(--color-gold);
+    color: var(--color-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.trigger:hover {
+    transform: scale(1.1) rotate(5deg);
+    background-color: var(--color-primary-dark);
+}
+
+.triggerIcon {
+    font-size: 1.5rem;
+}
+
+/* El Modal / Popover */
+.popover {
+    width: 350px;
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-gold);
+    border-radius: 15px;
+    padding: var(--spacing-sm);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    position: absolute;
+    bottom: 75px;
+    right: 0;
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: var(--color-text);
+}
+
+.popoverOpen {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+    visibility: visible;
+}
+
+.popoverClosed {
+    opacity: 0;
+    /* Movemos el cuadro lejos para que no interfiera pero mantenga su "presencia" para el script */
+    transform: translateY(100px) scale(0.8);
+    pointer-events: none;
+    visibility: hidden;
+    /* 
+       Aviso: visibility: hidden suele ser seguro, pero si falla lo cambiaremos 
+       por una posición off-screen absoluta.
+    */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--spacing-xs);
+}
+
+.header h3 {
+    font-size: 1rem;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--color-text-muted);
+}
+
+.playerArea {
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.widgetContainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Badge de "En Vivo" */
+.liveBadge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4d4d;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 480px) {
+    .popover {
+        width: calc(100vw - 40px);
+        right: 0;
+    }
+}

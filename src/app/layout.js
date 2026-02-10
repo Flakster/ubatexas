@@ -1,6 +1,7 @@
 import { Inter, Playfair_Display } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import RadioPlayer from "@/components/layout/RadioPlayer";
 import { AuthProvider } from '@/context/AuthContext';
 import { Suspense } from 'react';
 import AuthRecoveryDetector from '@/components/auth/AuthRecoveryDetector';
@@ -62,6 +63,7 @@ export default function RootLayout({ children }) {
           <Header />
           <main>{children}</main>
           <Footer />
+          <RadioPlayer />
         </AuthProvider>
 
         {/* 2. Insertamos el script usando dangerouslySetInnerHTML para evitar errores de parsing */}
