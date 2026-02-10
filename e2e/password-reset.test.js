@@ -39,7 +39,7 @@ test.describe('Password Reset Flow', () => {
 
         // Should be back on login form
         await expect(page.getByRole('heading', { name: /bienvenido de nuevo/i })).toBeVisible();
-        await expect(page.getByLabel(/contraseña/i)).toBeVisible();
+        await expect(page.getByLabel('Contraseña', { exact: true })).toBeVisible();
     });
 
     test('should validate email format on forgot password form', async ({ page }) => {
