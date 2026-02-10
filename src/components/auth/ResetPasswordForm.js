@@ -101,7 +101,18 @@ export default function ResetPasswordForm() {
             }, 3000);
         } catch (error) {
             console.error('Error updating password:', error);
-            setMessage({ type: 'error', text: error.message || 'Error al actualizar la contraseña.' });
+            let userFriendlyMessage = error.message;
+
+            const msg = error.message.toLowerCase();
+            if (msg.includes('different') && msg.includes('old')) {
+                userFriendlyMessage = 'La nueva contraseña debe ser diferente a la anterior por seguridad.';
+            } else if (msg.includes('password should be at least')) {
+                userFriendlyMessage = 'La contraseña debe tener al menos 6 caracteres.';
+            } else if (msg.includes('expired') || msg.includes('invalid')) {
+                userFriendlyMessage = 'El enlace de recuperación ha expirado o no es válido.';
+            }
+
+            setMessage({ type: 'error', text: userFriendlyMessage || 'Error al actualizar la contraseña.' });
         } finally {
             setLoading(false);
         }
