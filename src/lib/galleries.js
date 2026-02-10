@@ -9,6 +9,7 @@ export async function getPhotos(supabaseClient) {
             likes:photo_likes(count)
         `)
         .eq('status', 'approved') // Only show approved photos
+        .eq('is_archived', false) // Filter out archived photos
         .order('created_at', { ascending: false });
 
 

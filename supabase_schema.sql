@@ -31,3 +31,5 @@ create policy "Authenticated users can unlike photos"
 -- To show the list of users who liked a photo to the owner:
 -- We will query 'photo_likes' join 'profiles' (assuming public.profiles table exists with display_name).
 -- e.g., select p.display_name from photo_likes l join profiles p on l.user_id = p.id where l.photo_id = ?
+-- Add is_archived column to photos table for soft-delete/archiving
+-- ALTER TABLE public.photos ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT false;
