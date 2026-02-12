@@ -17,9 +17,6 @@ export const metadata = {
     template: '%s | Ubatexas'
   },
   description: 'Explora lo mejor de Ubaté: servicios, comercio, eventos, gente, cultura y noticias. La guía definitiva de la Capital Lechera de Colombia.',
-  alternates: {
-    canonical: 'https://ubatexas.com',
-  },
   icons: {
     icon: '/favicon.svg',
   },

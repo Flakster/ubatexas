@@ -2,6 +2,16 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
 export async function middleware(request) {
+    const url = request.nextUrl.clone();
+    const host = request.headers.get('host');
+
+    // 1. Force naked domain (ubatexas.com) instead of www
+    if (host && host.startsWith('www.')) {
+        const nakedHost = host.replace(/^www\./, '');
+        url.host = nakedHost;
+        return NextResponse.redirect(url, 301);
+    }
+
     let response = NextResponse.next({
         request: {
             headers: request.headers,
