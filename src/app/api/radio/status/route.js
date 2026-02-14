@@ -7,7 +7,7 @@ export async function GET() {
         // Consultamos directamente el servidor Icecast de Caster.fm
         // Esta URL fue identificada como el origen real del stream de Ubatexas
         const response = await fetch('http://shaincast.caster.fm:41582/status-json.xsl', {
-            next: { revalidate: 30 } // Cache breve de 30 segundos
+            cache: 'no-store'
         });
 
         if (!response.ok) {

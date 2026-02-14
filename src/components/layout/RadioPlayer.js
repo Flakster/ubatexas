@@ -17,7 +17,7 @@ export default function RadioPlayer() {
         const checkStatus = async () => {
             try {
                 // Consultamos nuestra propia API (Proxy) para evitar CORS y problemas de 404
-                const res = await fetch('/api/radio/status');
+                const res = await fetch('/api/radio/status', { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
                     setIsOnline(data.online);
@@ -29,8 +29,8 @@ export default function RadioPlayer() {
 
         checkStatus();
 
-        // Verificar cada 5 minutos por si la transmisión inicia/termina
-        const interval = setInterval(checkStatus, 5 * 60 * 1000);
+        // Verificar cada 1 minuto por si la transmisión inicia/termina
+        const interval = setInterval(checkStatus, 1 * 60 * 1000);
         return () => clearInterval(interval);
     }, []);
 
