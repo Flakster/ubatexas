@@ -1,13 +1,13 @@
 'use server';
 
-import { addPhoto } from '@/lib/galleries';
+import { addPhoto, updatePhotoStatus, deletePhoto, getPendingPhotosCount } from '@/lib/galleries';
+import { addEvent, updateEventStatus, getPendingEventsCount } from '@/lib/events';
 import { createClient } from '@/lib/supabaseServer';
 import { revalidatePath } from 'next/cache';
 import { containsProfanity } from '@/lib/moderation';
 
 export async function uploadPhotoAction(formData) {
     try {
-        console.log('--- Iniciando uploadPhotoAction ---');
         const supabase = await createClient();
         const file = formData.get('file');
         const caption = formData.get('caption');
@@ -29,13 +29,11 @@ export async function uploadPhotoAction(formData) {
             return { error: 'No se detectó una sesión válida. Por favor, sal e inicia sesión de nuevo.' };
         }
 
-        console.log('Usuario detectado:', user.id, user.email);
         const userId = user.id;
         const authorName = user.user_metadata?.display_name || user.email.split('@')[0];
 
         const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
 
-        console.log('Subiendo a storage...');
         const { error: uploadError } = await supabase.storage
             .from('ubatexas-public')
             .upload(`people/${fileName}`, file);
@@ -49,8 +47,6 @@ export async function uploadPhotoAction(formData) {
             .from('ubatexas-public')
             .getPublicUrl(`people/${fileName}`);
 
-        console.log('Insertando en DB con user_id:', userId);
-
         try {
             await addPhoto({
                 imageUrl: publicUrl,
@@ -59,7 +55,6 @@ export async function uploadPhotoAction(formData) {
                 author: `@${authorName}`,
                 user_id: userId
             }, supabase);
-            console.log('Inserción exitosa');
         } catch (dbError) {
             console.error('Database Error detail:', dbError);
             return { error: `Error en base de datos (RLS?): ${dbError.message}` };
@@ -74,7 +69,6 @@ export async function uploadPhotoAction(formData) {
 }
 
 export async function approvePhotoAction(id) {
-    const { updatePhotoStatus } = await import('@/lib/galleries');
     const supabase = await createClient();
     await updatePhotoStatus(id, 'approved', supabase);
     revalidatePath('/gente');
@@ -82,9 +76,7 @@ export async function approvePhotoAction(id) {
 }
 
 export async function rejectPhotoAction(id) {
-    const { deletePhoto } = await import('@/lib/galleries');
     const supabase = await createClient();
-
     const photo = await deletePhoto(id, supabase);
 
     if (photo && photo.image_url) {
@@ -104,29 +96,24 @@ export async function rejectPhotoAction(id) {
     revalidatePath('/admin/moderacion');
 }
 export async function approveEventAction(id) {
-    const { updateEventStatus } = await import('@/lib/events');
-    const { supabase } = await import('@/lib/supabase'); // Or createClient? Use updateEventStatus from lib/events
-    await updateEventStatus(id, 'approved');
+    const supabase = await createClient();
+    await updateEventStatus(id, 'approved', supabase);
     revalidatePath('/agenda');
     revalidatePath('/admin/agenda');
 }
 
 export async function rejectEventAction(id) {
-    const { updateEventStatus } = await import('@/lib/events');
+    const supabase = await createClient();
     // For rejection, we can just set status to 'rejected' or delete it. 
     // Usually better to just change status to avoid data loss if it was a mistake.
-    await updateEventStatus(id, 'rejected');
+    await updateEventStatus(id, 'rejected', supabase);
     revalidatePath('/admin/agenda');
 }
 
 export async function createEventAction(formData, userId, isAdmin) {
-    const { addEvent } = await import('@/lib/events');
+    const supabase = await createClient();
 
-    const title = formData.title;
-    const description = formData.description;
-    const location = formData.location;
-    const category = formData.category;
-    const date = formData.date;
+    const { title, description, location, category, date } = formData;
 
     if (containsProfanity(title) || containsProfanity(description) || containsProfanity(location)) {
         throw new Error('Contenido no permitido detectado. Por favor usa un lenguaje respetuoso.');
@@ -138,7 +125,7 @@ export async function createEventAction(formData, userId, isAdmin) {
         location,
         category,
         date
-    }, userId, isAdmin);
+    }, userId, isAdmin, supabase);
 
     revalidatePath('/agenda');
     if (isAdmin) revalidatePath('/admin/agenda');
