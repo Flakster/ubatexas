@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './EventForm.module.css';
 
-export default function EventForm({ onSubmit }) {
+export default function EventForm({ onSubmit, isAdmin = false }) {
     const router = useRouter();
     const [formData, setFormData] = useState({
         title: '',
@@ -18,10 +18,14 @@ export default function EventForm({ onSubmit }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        await onSubmit(formData);
-        setLoading(false);
-        router.push('/agenda');
-        router.refresh(); // Refresh to show new data
+        try {
+            await onSubmit(formData);
+            // We don't redirect here anymore, let the parent handle the success state
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleChange = (e) => {
@@ -100,7 +104,7 @@ export default function EventForm({ onSubmit }) {
             </div>
 
             <button type="submit" className="btn btn-accent" disabled={loading}>
-                {loading ? 'Guardando...' : 'Publicar Evento'}
+                {loading ? 'Enviando...' : (isAdmin ? 'Publicar Evento' : 'Enviar Sugerencia')}
             </button>
         </form>
     );

@@ -86,13 +86,17 @@ export default function EventModerationList({ initialEvents }) {
                                 flex: 1,
                                 padding: '0.5rem',
                                 border: '1px solid var(--color-border)',
-                                color: 'var(--color-text-muted)'
+                                color: 'var(--color-text-muted)',
+                                background: 'transparent'
                             }}
                             disabled={processingId === event.id}
                         >
                             {processingId === event.id ? '...' : 'Rechazar'}
                         </button>
                     </div>
+                    <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                        Sugerido por: <strong>{event.authorName || 'Usuario registrado'}</strong>
+                    </p>
                 </div>
             ))}
         </div>

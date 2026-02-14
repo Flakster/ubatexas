@@ -118,3 +118,30 @@ export async function rejectEventAction(id) {
     await updateEventStatus(id, 'rejected');
     revalidatePath('/admin/agenda');
 }
+
+export async function createEventAction(formData, userId, isAdmin) {
+    const { addEvent } = await import('@/lib/events');
+
+    const title = formData.title;
+    const description = formData.description;
+    const location = formData.location;
+    const category = formData.category;
+    const date = formData.date;
+
+    if (containsProfanity(title) || containsProfanity(description) || containsProfanity(location)) {
+        throw new Error('Contenido no permitido detectado. Por favor usa un lenguaje respetuoso.');
+    }
+
+    const data = await addEvent({
+        title,
+        description,
+        location,
+        category,
+        date
+    }, userId, isAdmin);
+
+    revalidatePath('/agenda');
+    if (isAdmin) revalidatePath('/admin/agenda');
+
+    return { success: true, data };
+}

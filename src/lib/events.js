@@ -3,7 +3,12 @@ import { supabase } from './supabase';
 export async function getEvents(includePending = false) {
     let query = supabase
         .from('events')
-        .select('*')
+        .select(`
+            *,
+            profiles:user_id (
+                display_name
+            )
+        `)
         .order('date', { ascending: true });
 
     if (!includePending) {
@@ -16,7 +21,12 @@ export async function getEvents(includePending = false) {
         console.error('Error fetching events:', error);
         return [];
     }
-    return data;
+
+    // Flatten the profile data for easier use
+    return data.map(event => ({
+        ...event,
+        authorName: event.profiles?.display_name || 'Anónimo'
+    }));
 }
 
 export async function addEvent(event, userId = null, isAdmin = false) {
