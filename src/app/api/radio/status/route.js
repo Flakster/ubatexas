@@ -22,7 +22,8 @@ export async function GET() {
         return NextResponse.json({
             online: isOnline,
             listeners: data.icestats.source?.listeners || 0,
-            now_playing: data.icestats.source?.title || 'Ubatexas Radio'
+            now_playing: data.icestats.source?.title || 'Ubatexas Radio',
+            debug_raw: data // Temporalmente para ver qué devuelve realmente
         });
     } catch (error) {
         console.error('Radio Status API Error:', error);
