@@ -14,8 +14,8 @@ export default async function AdminAgendaPage() {
         redirect('/');
     }
 
-    // Pass true to include pending events and filter them manually or adjust getEvents
-    const allEvents = await getEvents(true);
+    // Pass true to include pending events and use the server client
+    const allEvents = await getEvents(true, supabase);
     const pendingEvents = allEvents.filter(e => e.status === 'pending');
 
     return (

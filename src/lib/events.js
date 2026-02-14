@@ -3,12 +3,7 @@ import { supabase as defaultSupabase } from './supabase';
 export async function getEvents(includePending = false, supabaseClient = defaultSupabase) {
     let query = supabaseClient
         .from('events')
-        .select(`
-            *,
-            profiles:user_id (
-                display_name
-            )
-        `)
+        .select('*')
         .order('date', { ascending: true });
 
     if (!includePending) {
@@ -22,10 +17,9 @@ export async function getEvents(includePending = false, supabaseClient = default
         return [];
     }
 
-    // Flatten the profile data for easier use
     return data.map(event => ({
         ...event,
-        authorName: event.profiles?.display_name || 'Anónimo'
+        authorName: event.author_name || 'Anónimo'
     }));
 }
 
@@ -40,6 +34,7 @@ export async function addEvent(event, userId = null, isAdmin = false, supabaseCl
                 category: event.category,
                 description: event.description,
                 user_id: userId,
+                author_name: event.authorName, // New column
                 status: isAdmin ? 'approved' : 'pending'
             }
         ])

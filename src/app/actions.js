@@ -119,12 +119,17 @@ export async function createEventAction(formData, userId, isAdmin) {
         throw new Error('Contenido no permitido detectado. Por favor usa un lenguaje respetuoso.');
     }
 
+    // Fetch user again to get display name for author_name column
+    const { data: { user } } = await supabase.auth.getUser();
+    const authorName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Anónimo';
+
     const data = await addEvent({
         title,
         description,
         location,
         category,
-        date
+        date,
+        authorName
     }, userId, isAdmin, supabase);
 
     revalidatePath('/agenda');

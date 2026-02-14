@@ -10,7 +10,7 @@ export default async function AgendaPage() {
     const { data: { user } } = await supabase.auth.getUser();
     const isUserAdmin = isAdmin(user);
 
-    const events = await getEvents(); // Default filters by status = 'approved'
+    const events = await getEvents(false, supabase); // Default filters by status = 'approved'
 
     return (
         <div className="container">
