@@ -16,14 +16,14 @@ export default function RadioPlayer() {
         // Función para verificar el estado de la radio
         const checkStatus = async () => {
             try {
-                const res = await fetch('https://www.caster.fm/api/get_status.php?p=dd80389f-b0b5-4095-96e1-ee5921017e50');
+                // Consultamos nuestra propia API (Proxy) para evitar CORS y problemas de 404
+                const res = await fetch('/api/radio/status');
                 if (res.ok) {
                     const data = await res.json();
-                    setIsOnline(data.status === 'online');
+                    setIsOnline(data.online);
                 }
             } catch (error) {
                 console.error('Error checking radio status:', error);
-                // Si falla la API, por seguridad no mostramos nada o mantenemos el estado previo
             }
         };
 
