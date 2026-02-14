@@ -26,7 +26,7 @@ export default function RadioPlayer() {
                      class="cstrEmbed">
                     <a href="https://www.caster.fm">Shoutcast Hosting</a> 
                     <a href="https://www.caster.fm">Stream Hosting</a> 
-                    <a href="https://www.caster.fm)Radio Server Hosting</a>
+                    <a href="https://www.caster.fm">Radio Server Hosting</a>
                 </div>
             `;
 
@@ -71,7 +71,7 @@ export default function RadioPlayer() {
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Minimizar Radio" : "Abrir Radio"}
             >
-                <span className={styles.liveBadge}>LIVE</span>
+                <span className={styles.liveBadge}>RADIO</span>
                 <span className={styles.triggerIcon}>{isOpen ? '▼' : '📻'}</span>
             </button>
         </div>
