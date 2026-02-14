@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { formatUsername } from '@/lib/utils';
 import { isAdmin } from '@/lib/auth-utils';
 import { getPendingPhotosCount } from '@/lib/galleries';
+import { getPendingEventsCount } from '@/lib/events';
 import styles from './Header.module.css';
 import { useEffect } from 'react';
 
@@ -17,8 +18,9 @@ export default function Header() {
     useEffect(() => {
         const fetchPendingCount = async () => {
             if (isAdmin(user)) {
-                const count = await getPendingPhotosCount();
-                setPendingCount(count);
+                const photoCount = await getPendingPhotosCount();
+                const eventCount = await getPendingEventsCount();
+                setPendingCount(photoCount + eventCount);
             } else {
                 setPendingCount(0);
             }
@@ -57,14 +59,22 @@ export default function Header() {
                         <li><Link href="/territorio" onClick={() => setIsMenuOpen(false)}>Territorio</Link></li>
                         <li><Link href="/negocios" onClick={() => setIsMenuOpen(false)}>Negocios</Link></li>
                         {isAdmin(user) && (
-                            <li className={styles.adminLink} onClick={() => setIsMenuOpen(false)}>
-                                <Link href="/admin/moderacion">
-                                    Moderación
-                                    {pendingCount > 0 && (
-                                        <span className={styles.badge}>{pendingCount}</span>
-                                    )}
-                                </Link>
-                            </li>
+                            <>
+                                <li className={styles.adminLink} onClick={() => setIsMenuOpen(false)}>
+                                    <Link href="/admin/moderacion">
+                                        Fotos
+                                        {/* Badge for photos specifically? No, keeping it simple */}
+                                    </Link>
+                                </li>
+                                <li className={styles.adminLink} onClick={() => setIsMenuOpen(false)}>
+                                    <Link href="/admin/agenda">
+                                        Agenda
+                                        {pendingCount > 0 && (
+                                            <span className={styles.badge}>{pendingCount}</span>
+                                        )}
+                                    </Link>
+                                </li>
+                            </>
                         )}
                         <li>
                             {user ? (

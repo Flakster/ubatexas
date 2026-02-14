@@ -1,10 +1,15 @@
-import Link from 'next/link';
 import { getEvents } from '@/lib/events';
+import { createClient } from '@/lib/supabaseServer';
+import { isAdmin } from '@/lib/auth-utils';
 
-export const dynamic = 'force-dynamic'; // To ensure we see new events immediately in dev
+export const dynamic = 'force-dynamic';
 
 export default async function AgendaPage() {
-    const events = await getEvents();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const isUserAdmin = isAdmin(user);
+
+    const events = await getEvents(); // Default filters by status = 'approved'
 
     return (
         <div className="container">
@@ -12,7 +17,7 @@ export default async function AgendaPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                     <h1 style={{ color: 'var(--color-primary)', margin: 0 }}>Agenda Ubatexas</h1>
                     <Link href="/agenda/nuevo" className="btn btn-accent">
-                        + Nuevo Evento
+                        {isUserAdmin ? '+ Nuevo Evento' : '+ Sugerir Evento'}
                     </Link>
                 </div>
 

@@ -103,3 +103,18 @@ export async function rejectPhotoAction(id) {
 
     revalidatePath('/admin/moderacion');
 }
+export async function approveEventAction(id) {
+    const { updateEventStatus } = await import('@/lib/events');
+    const { supabase } = await import('@/lib/supabase'); // Or createClient? Use updateEventStatus from lib/events
+    await updateEventStatus(id, 'approved');
+    revalidatePath('/agenda');
+    revalidatePath('/admin/agenda');
+}
+
+export async function rejectEventAction(id) {
+    const { updateEventStatus } = await import('@/lib/events');
+    // For rejection, we can just set status to 'rejected' or delete it. 
+    // Usually better to just change status to avoid data loss if it was a mistake.
+    await updateEventStatus(id, 'rejected');
+    revalidatePath('/admin/agenda');
+}
