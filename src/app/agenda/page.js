@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getEvents } from '@/lib/events';
 import { createClient } from '@/lib/supabaseServer';
 import { isAdmin } from '@/lib/auth-utils';
