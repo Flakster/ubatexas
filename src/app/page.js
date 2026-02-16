@@ -6,6 +6,11 @@ import { getEvents } from '@/lib/events';
 import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
+export const metadata = {
+  alternates: {
+    canonical: '/',
+  },
+};
 
 export default async function Home() {
   const events = await getEvents();

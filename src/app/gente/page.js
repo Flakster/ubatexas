@@ -3,6 +3,13 @@ import { getPhotos } from '@/lib/galleries';
 import GalleryGrid from '@/components/gente/GalleryGrid';
 
 export const dynamic = 'force-dynamic';
+export const metadata = {
+    title: 'Gente & Estilo',
+    description: 'La pasarela digital y galería de la gente en la provincia de Ubaté.',
+    alternates: {
+        canonical: '/gente',
+    },
+};
 
 export default async function GentePage() {
     const photos = await getPhotos();

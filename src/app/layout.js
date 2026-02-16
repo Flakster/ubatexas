@@ -36,6 +36,9 @@ export const metadata = {
       }
     ],
   },
+  alternates: {
+    canonical: 'https://ubatexas.com',
+  },
   twitter: {
     card: 'summary_large_image',
     title: 'Ubatexas',

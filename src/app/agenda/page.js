@@ -4,6 +4,13 @@ import { createClient } from '@/lib/supabaseServer';
 import { isAdmin } from '@/lib/auth-utils';
 
 export const dynamic = 'force-dynamic';
+export const metadata = {
+    title: 'Agenda 2026',
+    description: 'Consulta los próximos eventos y actividades en la provincia de Ubaté.',
+    alternates: {
+        canonical: '/agenda',
+    },
+};
 
 export default async function AgendaPage() {
     const supabase = await createClient();
