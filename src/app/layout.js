@@ -48,18 +48,38 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  // 1. Creamos el objeto JSON-LD fuera del return para que sea código limpio
+  // 1. JSON-LD Schemas
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Ubatexas",
     "url": "https://ubatexas.com",
-    "logo": "https://ubatexas.com/favicon.svg",
-    "description": "Medio de comunicación digital, lifestyle y turismo en la provincia de Ubaté.",
+    "logo": "https://ubatexas.com/logo.png",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "areaServed": "CO",
+      "availableLanguage": "Spanish"
+    },
     "sameAs": [
       "https://www.instagram.com/ubatexasoficial/",
       "https://www.facebook.com/profile.php?id=61587895797422"
     ]
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Ubatexas",
+    "url": "https://ubatexas.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://ubatexas.com/gente?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
   };
 
   return (
@@ -75,10 +95,14 @@ export default function RootLayout({ children }) {
           <RadioPlayer />
         </AuthProvider>
 
-        {/* 2. Insertamos el script usando dangerouslySetInnerHTML para evitar errores de parsing */}
+        {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </body>
     </html>

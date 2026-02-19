@@ -7,6 +7,8 @@ import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
 export const metadata = {
+  title: 'Ubatexas | El Escenario de la Provincia de Ubaté',
+  description: 'Digital Media & Lifestyle en la Provincia de Ubaté. Explora comercio, eventos, cultura y lo mejor de la Capital Lechera de Colombia.',
   alternates: {
     canonical: '/',
   },
@@ -35,6 +37,7 @@ export default async function Home() {
             </p>
             <div className={styles.actions}>
               <Link href="/agenda" className="btn btn-accent">Ver Agenda 2026</Link>
+              {' '}
               <Link href="/gente" className="btn">Galería de Gente</Link>
             </div>
           </div>
