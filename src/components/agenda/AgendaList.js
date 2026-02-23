@@ -6,6 +6,8 @@ import { approveEventAction, deleteEventAction } from '@/app/actions';
 export default function AgendaList({ initialEvents, isAdmin }) {
     const [events, setEvents] = useState(initialEvents);
     const [processingId, setProcessingId] = useState(null);
+    const [isFutureExpanded, setIsFutureExpanded] = useState(false);
+    const [isPastExpanded, setIsPastExpanded] = useState(false);
 
     const handleApprove = async (id) => {
         setProcessingId(id);
@@ -47,6 +49,9 @@ export default function AgendaList({ initialEvents, isAdmin }) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const thirtyDaysLater = new Date(today);
+    thirtyDaysLater.setDate(today.getDate() + 30);
+
     const parseDate = (dateStr) => {
         // Assuming dateStr is "YYYY-MM-DD" or similar ISO format
         const d = new Date(dateStr);
@@ -60,7 +65,12 @@ export default function AgendaList({ initialEvents, isAdmin }) {
 
     const upcomingEvents = approvedEventsRaw.filter(e => {
         const eventDate = parseDate(e.date);
-        return eventDate >= today;
+        return eventDate >= today && eventDate < thirtyDaysLater;
+    }).sort((a, b) => parseDate(a.date) - parseDate(b.date)); // Ascending (soonest first)
+
+    const farFutureEvents = approvedEventsRaw.filter(e => {
+        const eventDate = parseDate(e.date);
+        return eventDate >= thirtyDaysLater;
     }).sort((a, b) => parseDate(a.date) - parseDate(b.date)); // Ascending (soonest first)
 
     const pastEvents = approvedEventsRaw.filter(e => {
@@ -186,19 +196,51 @@ export default function AgendaList({ initialEvents, isAdmin }) {
                 </>
             )}
 
-            {pastEvents.length > 0 && (
+            {farFutureEvents.length > 0 && (
                 <>
-                    {upcomingEvents.length > 0 && <hr style={{ width: '100%', border: 'none', borderTop: '1px solid var(--color-border)', margin: '1rem 0' }} />}
-                    <h2 style={{ fontSize: '1rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.8 }}>
-                        Eventos anteriores
-                    </h2>
-                    <div style={{ display: 'grid', gap: '2rem', opacity: 0.9 }}>
-                        {pastEvents.map(renderEvent)}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
+                        <h2 style={{ fontSize: '1.1rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                            Eventos futuros
+                        </h2>
+                        <button
+                            onClick={() => setIsFutureExpanded(!isFutureExpanded)}
+                            className="btn"
+                            style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', background: '#f5f5f5' }}
+                        >
+                            {isFutureExpanded ? 'Ocultar' : `Ver ${farFutureEvents.length} eventos`}
+                        </button>
                     </div>
+                    {isFutureExpanded && (
+                        <div style={{ display: 'grid', gap: '2rem' }}>
+                            {farFutureEvents.map(renderEvent)}
+                        </div>
+                    )}
                 </>
             )}
 
-            {upcomingEvents.length === 0 && pastEvents.length === 0 && !pendingEvents.length && (
+            {pastEvents.length > 0 && (
+                <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', borderTop: '1px solid var(--color-border)', paddingTop: '2rem' }}>
+                        <h2 style={{ fontSize: '1rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.8 }}>
+                            Eventos anteriores
+                        </h2>
+                        <button
+                            onClick={() => setIsPastExpanded(!isPastExpanded)}
+                            className="btn"
+                            style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', background: '#f5f5f5' }}
+                        >
+                            {isPastExpanded ? 'Ocultar' : `Ver ${pastEvents.length} anteriores`}
+                        </button>
+                    </div>
+                    {isPastExpanded && (
+                        <div style={{ display: 'grid', gap: '2rem', opacity: 0.9 }}>
+                            {pastEvents.map(renderEvent)}
+                        </div>
+                    )}
+                </>
+            )}
+
+            {upcomingEvents.length === 0 && farFutureEvents.length === 0 && pastEvents.length === 0 && !pendingEvents.length && (
                 <p>No hay eventos aprobados aún.</p>
             )}
         </div>
