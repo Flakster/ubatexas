@@ -98,8 +98,8 @@ export async function rejectPhotoAction(id) {
     revalidatePath('/admin/moderacion');
 }
 export async function approveEventAction(id) {
-    const supabase = await createClient();
-    await updateEventStatus(id, 'approved', supabase);
+    const adminClient = createAdminClient();
+    await updateEventStatus(id, 'approved', adminClient);
     revalidatePath('/agenda');
     revalidatePath('/admin/agenda');
 }

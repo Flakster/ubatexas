@@ -73,11 +73,6 @@ export default function Header() {
                                         {/* Badge for photos specifically? No, keeping it simple */}
                                     </Link>
                                 </li>
-                                <li className={styles.adminLink} onClick={() => setIsMenuOpen(false)}>
-                                    <Link href="/admin/moderacion">
-                                        Fotos
-                                    </Link>
-                                </li>
                             </>
                         )}
                         <li>
