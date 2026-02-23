@@ -46,130 +46,141 @@ export default function AgendaList({ initialEvents, isAdmin }) {
     }
 
     // Date categorization logic
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayTime = today.getTime();
 
-    const thirtyDaysLater = new Date(today);
-    thirtyDaysLater.setDate(today.getDate() + 30);
+    const thirtyDaysTime = todayTime + (30 * 24 * 60 * 60 * 1000);
 
-    const parseDate = (dateStr) => {
-        // Assuming dateStr is "YYYY-MM-DD" or similar ISO format
+    const parseToTime = (dateStr) => {
+        if (!dateStr) return 0;
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            // Local date parsing
+            const y = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10) - 1;
+            const d = parseInt(parts[2], 10);
+            return new Date(y, m, d).getTime();
+        }
         const d = new Date(dateStr);
-        if (isNaN(d.getTime())) return new Date(0); // Fallback for invalid dates
-        return d;
+        return isNaN(d.getTime()) ? 0 : d.getTime();
     };
 
     const pendingEvents = isAdmin ? events.filter(e => e.status === 'pending' || !e.status) : [];
-
     const approvedEventsRaw = events.filter(e => e.status === 'approved');
 
     const upcomingEvents = approvedEventsRaw.filter(e => {
-        const eventDate = parseDate(e.date);
-        return eventDate >= today && eventDate < thirtyDaysLater;
-    }).sort((a, b) => parseDate(a.date) - parseDate(b.date)); // Ascending (soonest first)
+        const eventTime = parseToTime(e.date);
+        return eventTime >= todayTime && eventTime < thirtyDaysTime;
+    }).sort((a, b) => parseToTime(a.date) - parseToTime(b.date));
 
     const farFutureEvents = approvedEventsRaw.filter(e => {
-        const eventDate = parseDate(e.date);
-        return eventDate >= thirtyDaysLater;
-    }).sort((a, b) => parseDate(a.date) - parseDate(b.date)); // Ascending (soonest first)
+        const eventTime = parseToTime(e.date);
+        return eventTime >= thirtyDaysTime;
+    }).sort((a, b) => parseToTime(a.date) - parseToTime(b.date));
 
     const pastEvents = approvedEventsRaw.filter(e => {
-        const eventDate = parseDate(e.date);
-        return eventDate < today;
-    }).sort((a, b) => parseDate(b.date) - parseDate(a.date)); // Descending (most recent first)
+        const eventTime = parseToTime(e.date);
+        return eventTime < todayTime;
+    }).sort((a, b) => parseToTime(b.date) - parseToTime(a.date));
 
-    const renderEvent = (event) => (
-        <div key={event.id} style={{
-            background: 'white',
-            border: '1px solid var(--color-border)',
-            padding: '2rem',
-            borderRadius: '8px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-            opacity: processingId === event.id ? 0.7 : (event.status !== 'approved' || parseDate(event.date) < today ? 0.8 : 1),
-            position: 'relative'
-        }}>
-            {event.status === 'pending' && (
-                <div style={{
-                    position: 'absolute',
-                    top: '1rem',
-                    right: '1rem',
-                    background: 'var(--color-accent)',
-                    color: 'white',
-                    padding: '0.2rem 0.6rem',
-                    borderRadius: '4px',
-                    fontSize: '0.7rem',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase'
-                }}>
-                    Pendiente
-                </div>
-            )}
-            <div style={{
+    const renderEvent = (event) => {
+        const eventTime = parseToTime(event.date);
+        const isPast = eventTime < todayTime;
+
+        return (
+            <div key={event.id} style={{
+                background: 'white',
+                border: '1px solid var(--color-border)',
+                padding: '2rem',
+                borderRadius: '8px',
                 display: 'flex',
-                justifyContent: 'space-between',
-                borderBottom: '1px solid var(--color-border)',
-                paddingBottom: '1rem',
-                marginBottom: '1rem'
+                flexDirection: 'column',
+                gap: '0.5rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                opacity: processingId === event.id ? 0.7 : (event.status !== 'approved' || isPast ? 0.8 : 1),
+                position: 'relative'
             }}>
-                <span style={{
-                    background: 'var(--color-primary)',
-                    color: 'white',
-                    padding: '0.2rem 0.8rem',
-                    borderRadius: '20px',
-                    fontSize: '0.8rem',
-                    textTransform: 'uppercase'
-                }}>
-                    {event.category || 'Evento'}
-                </span>
-                <span style={{ color: 'var(--color-text-muted)' }}>
-                    {event.date}
-                </span>
-            </div>
-
-            <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', margin: '0.5rem 0' }}>{event.title}</h3>
-            <p style={{ fontWeight: 500, color: 'var(--color-accent)', margin: 0 }}>📍 {event.location}</p>
-            <p style={{ lineHeight: 1.6, margin: '0.5rem 0 1.5rem 0' }}>{event.description}</p>
-
-            {isAdmin && (
+                {event.status === 'pending' && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '1rem',
+                        right: '1rem',
+                        background: 'var(--color-accent)',
+                        color: 'white',
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '4px',
+                        fontSize: '0.7rem',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase'
+                    }}>
+                        Pendiente
+                    </div>
+                )}
                 <div style={{
                     display: 'flex',
-                    gap: '1rem',
-                    marginTop: 'auto',
-                    paddingTop: '1rem',
-                    borderTop: '1px dashed var(--color-border)'
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid var(--color-border)',
+                    paddingBottom: '1rem',
+                    marginBottom: '1rem'
                 }}>
-                    {event.status === 'pending' && (
+                    <span style={{
+                        background: 'var(--color-primary)',
+                        color: 'white',
+                        padding: '0.2rem 0.8rem',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        textTransform: 'uppercase'
+                    }}>
+                        {event.category || 'Evento'}
+                    </span>
+                    <span style={{ color: 'var(--color-text-muted)' }}>
+                        {event.date}
+                    </span>
+                </div>
+
+                <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', margin: '0.5rem 0' }}>{event.title}</h3>
+                <p style={{ fontWeight: 500, color: 'var(--color-accent)', margin: 0 }}>📍 {event.location}</p>
+                <p style={{ lineHeight: 1.6, margin: '0.5rem 0 1.5rem 0' }}>{event.description}</p>
+
+                {isAdmin && (
+                    <div style={{
+                        display: 'flex',
+                        gap: '1rem',
+                        marginTop: 'auto',
+                        paddingTop: '1rem',
+                        borderTop: '1px dashed var(--color-border)'
+                    }}>
+                        {event.status === 'pending' && (
+                            <button
+                                onClick={() => handleApprove(event.id)}
+                                className="btn btn-primary"
+                                style={{ flex: 1, padding: '0.5rem' }}
+                                disabled={processingId === event.id}
+                            >
+                                Aprobar
+                            </button>
+                        )}
                         <button
-                            onClick={() => handleApprove(event.id)}
-                            className="btn btn-primary"
-                            style={{ flex: 1, padding: '0.5rem' }}
+                            onClick={() => handleDelete(event.id)}
+                            className="btn"
+                            style={{
+                                flex: 1,
+                                padding: '0.5rem',
+                                border: `1px solid ${event.status === 'pending' ? 'var(--color-border)' : '#ff4d4d'}`,
+                                color: event.status === 'pending' ? 'var(--color-text-muted)' : '#ff4d4d',
+                                background: 'transparent',
+                                fontSize: '0.85rem'
+                            }}
                             disabled={processingId === event.id}
                         >
-                            Aprobar
+                            {event.status === 'pending' ? 'Rechazar' : 'Eliminar'}
                         </button>
-                    )}
-                    <button
-                        onClick={() => handleDelete(event.id)}
-                        className="btn"
-                        style={{
-                            flex: 1,
-                            padding: '0.5rem',
-                            border: `1px solid ${event.status === 'pending' ? 'var(--color-border)' : '#ff4d4d'}`,
-                            color: event.status === 'pending' ? 'var(--color-text-muted)' : '#ff4d4d',
-                            background: 'transparent',
-                            fontSize: '0.85rem'
-                        }}
-                        disabled={processingId === event.id}
-                    >
-                        {event.status === 'pending' ? 'Rechazar' : 'Eliminar'}
-                    </button>
-                </div>
-            )}
-        </div>
-    );
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     return (
         <div style={{ display: 'grid', gap: '2rem' }}>
@@ -185,16 +196,21 @@ export default function AgendaList({ initialEvents, isAdmin }) {
                 </>
             )}
 
-            {upcomingEvents.length > 0 && (
-                <>
-                    <h2 style={{ fontSize: '1.1rem', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                        Próximos Eventos
-                    </h2>
+            {/* Próximos Eventos */}
+            <div>
+                <h2 style={{ fontSize: '1.1rem', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    Próximos Eventos
+                </h2>
+                {upcomingEvents.length > 0 ? (
                     <div style={{ display: 'grid', gap: '2rem' }}>
                         {upcomingEvents.map(renderEvent)}
                     </div>
-                </>
-            )}
+                ) : (
+                    <p style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', padding: '1rem', background: '#f9f9f9', borderRadius: '8px', textAlign: 'center' }}>
+                        No hay eventos próximos programados.
+                    </p>
+                )}
+            </div>
 
             {farFutureEvents.length > 0 && (
                 <>
@@ -238,10 +254,6 @@ export default function AgendaList({ initialEvents, isAdmin }) {
                         </div>
                     )}
                 </>
-            )}
-
-            {upcomingEvents.length === 0 && farFutureEvents.length === 0 && pastEvents.length === 0 && !pendingEvents.length && (
-                <p>No hay eventos aprobados aún.</p>
             )}
         </div>
     );
