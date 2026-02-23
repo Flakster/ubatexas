@@ -3,6 +3,8 @@
 import { addPhoto, updatePhotoStatus, deletePhoto, getPendingPhotosCount } from '@/lib/galleries';
 import { addEvent, updateEventStatus, getPendingEventsCount, deleteEvent } from '@/lib/events';
 import { createClient } from '@/lib/supabaseServer';
+import { createAdminClient } from '@/lib/supabaseAdmin';
+import { isAdmin } from '@/lib/auth-utils';
 import { revalidatePath } from 'next/cache';
 import { containsProfanity } from '@/lib/moderation';
 
@@ -104,9 +106,17 @@ export async function approveEventAction(id) {
 
 export async function deleteEventAction(id) {
     const supabase = await createClient();
-    await deleteEvent(id, supabase);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!isAdmin(user)) {
+        throw new Error('No autorizado para borrar eventos');
+    }
+
+    const adminClient = createAdminClient();
+    await deleteEvent(id, adminClient);
+
     revalidatePath('/agenda');
-    revalidatePath('/admin/agenda');
+    revalidatePath('/admin/agenda'); // Still revalidate old path if it exists for now
 }
 
 export async function rejectEventAction(id) {

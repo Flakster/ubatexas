@@ -54,7 +54,14 @@ export default function Header() {
 
                 <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
                     <ul className={styles.navList}>
-                        <li onClick={() => setIsMenuOpen(false)}><Link href="/agenda">Agenda</Link></li>
+                        <li onClick={() => setIsMenuOpen(false)}>
+                            <Link href="/agenda" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                Agenda
+                                {isAdmin(user) && pendingCount > 0 && (
+                                    <span className={styles.badge}>{pendingCount}</span>
+                                )}
+                            </Link>
+                        </li>
                         <li onClick={() => setIsMenuOpen(false)}><Link href="/gente">Gente</Link></li>
                         <li><Link href="/territorio" onClick={() => setIsMenuOpen(false)}>Territorio</Link></li>
                         <li><Link href="/negocios" onClick={() => setIsMenuOpen(false)}>Negocios</Link></li>
@@ -67,11 +74,8 @@ export default function Header() {
                                     </Link>
                                 </li>
                                 <li className={styles.adminLink} onClick={() => setIsMenuOpen(false)}>
-                                    <Link href="/admin/agenda">
-                                        Agenda
-                                        {pendingCount > 0 && (
-                                            <span className={styles.badge}>{pendingCount}</span>
-                                        )}
+                                    <Link href="/admin/moderacion">
+                                        Fotos
                                     </Link>
                                 </li>
                             </>
