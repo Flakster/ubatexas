@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { approveEventAction, rejectEventAction } from '@/app/actions';
+import { approveEventAction, rejectEventAction, deleteEventAction } from '@/app/actions';
 import styles from './ModerationList.module.css'; // Reusing styles from photos for consistency
 
-export default function EventModerationList({ initialEvents }) {
+export default function EventModerationList({ initialEvents, mode = 'pending' }) {
     const [events, setEvents] = useState(initialEvents);
     const [processingId, setProcessingId] = useState(null);
 
@@ -21,7 +21,7 @@ export default function EventModerationList({ initialEvents }) {
     };
 
     const handleReject = async (id) => {
-        if (!confirm('¿Seguro que quieres borrar este evento?')) return;
+        if (!confirm('¿Seguro que quieres borrar esta sugerencia?')) return;
         setProcessingId(id);
         try {
             await rejectEventAction(id);
@@ -33,10 +33,23 @@ export default function EventModerationList({ initialEvents }) {
         }
     };
 
+    const handleDelete = async (id) => {
+        if (!confirm('¿Seguro que quieres eliminar este evento permanentemente?')) return;
+        setProcessingId(id);
+        try {
+            await deleteEventAction(id);
+            setEvents(events.filter(e => e.id !== id));
+        } catch (error) {
+            alert('Error al eliminar: ' + error.message);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
     if (events.length === 0) {
         return (
-            <div className={styles.empty}>
-                <p>No hay eventos pendientes de moderación. 🎉</p>
+            <div className={styles.empty} style={{ border: '1px dashed var(--color-border)', borderRadius: '8px', padding: '2rem' }}>
+                <p>No hay eventos en esta sección. {mode === 'pending' ? '🎉' : ''}</p>
             </div>
         );
     }
@@ -49,11 +62,12 @@ export default function EventModerationList({ initialEvents }) {
                     border: '1px solid var(--color-border)',
                     padding: '1.5rem',
                     borderRadius: '8px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                    opacity: processingId === event.id ? 0.7 : 1
                 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                         <span style={{
-                            background: 'var(--color-accent)',
+                            background: mode === 'pending' ? 'var(--color-accent)' : 'var(--color-primary)',
                             color: 'white',
                             padding: '0.2rem 0.6rem',
                             borderRadius: '4px',
@@ -71,28 +85,47 @@ export default function EventModerationList({ initialEvents }) {
                     <p style={{ margin: '0 0 1.5rem 0', lineHeight: '1.5' }}>{event.description}</p>
 
                     <div style={{ display: 'flex', gap: '1rem' }}>
-                        <button
-                            onClick={() => handleApprove(event.id)}
-                            className="btn btn-primary"
-                            style={{ flex: 1, padding: '0.5rem' }}
-                            disabled={processingId === event.id}
-                        >
-                            {processingId === event.id ? '...' : 'Aprobar'}
-                        </button>
-                        <button
-                            onClick={() => handleReject(event.id)}
-                            className="btn"
-                            style={{
-                                flex: 1,
-                                padding: '0.5rem',
-                                border: '1px solid var(--color-border)',
-                                color: 'var(--color-text-muted)',
-                                background: 'transparent'
-                            }}
-                            disabled={processingId === event.id}
-                        >
-                            {processingId === event.id ? '...' : 'Rechazar'}
-                        </button>
+                        {mode === 'pending' ? (
+                            <>
+                                <button
+                                    onClick={() => handleApprove(event.id)}
+                                    className="btn btn-primary"
+                                    style={{ flex: 1, padding: '0.5rem' }}
+                                    disabled={processingId === event.id}
+                                >
+                                    {processingId === event.id ? '...' : 'Aprobar'}
+                                </button>
+                                <button
+                                    onClick={() => handleReject(event.id)}
+                                    className="btn"
+                                    style={{
+                                        flex: 1,
+                                        padding: '0.5rem',
+                                        border: '1px solid var(--color-border)',
+                                        color: 'var(--color-text-muted)',
+                                        background: 'transparent'
+                                    }}
+                                    disabled={processingId === event.id}
+                                >
+                                    {processingId === event.id ? '...' : 'Rechazar'}
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                onClick={() => handleDelete(event.id)}
+                                className="btn"
+                                style={{
+                                    flex: 1,
+                                    padding: '0.5rem',
+                                    border: '1px solid #ff4d4d',
+                                    color: '#ff4d4d',
+                                    background: 'transparent'
+                                }}
+                                disabled={processingId === event.id}
+                            >
+                                {processingId === event.id ? '...' : 'Eliminar Evento'}
+                            </button>
+                        )}
                     </div>
                     <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
                         Sugerido por: <strong>{event.authorName || 'Usuario registrado'}</strong>

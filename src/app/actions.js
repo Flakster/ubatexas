@@ -1,7 +1,7 @@
 'use server';
 
 import { addPhoto, updatePhotoStatus, deletePhoto, getPendingPhotosCount } from '@/lib/galleries';
-import { addEvent, updateEventStatus, getPendingEventsCount } from '@/lib/events';
+import { addEvent, updateEventStatus, getPendingEventsCount, deleteEvent } from '@/lib/events';
 import { createClient } from '@/lib/supabaseServer';
 import { revalidatePath } from 'next/cache';
 import { containsProfanity } from '@/lib/moderation';
@@ -102,12 +102,16 @@ export async function approveEventAction(id) {
     revalidatePath('/admin/agenda');
 }
 
-export async function rejectEventAction(id) {
+export async function deleteEventAction(id) {
     const supabase = await createClient();
-    // For rejection, we can just set status to 'rejected' or delete it. 
-    // Usually better to just change status to avoid data loss if it was a mistake.
-    await updateEventStatus(id, 'rejected', supabase);
+    await deleteEvent(id, supabase);
+    revalidatePath('/agenda');
     revalidatePath('/admin/agenda');
+}
+
+export async function rejectEventAction(id) {
+    // Reusing deleteEventAction logic for rejection
+    return deleteEventAction(id);
 }
 
 export async function createEventAction(formData, userId, isAdmin) {

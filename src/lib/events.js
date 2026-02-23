@@ -72,3 +72,16 @@ export async function getPendingEventsCount(supabaseClient = defaultSupabase) {
     }
     return count || 0;
 }
+
+export async function deleteEvent(id, supabaseClient = defaultSupabase) {
+    const { data, error } = await supabaseClient
+        .from('events')
+        .delete()
+        .eq('id', id)
+        .select();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+    return data[0];
+}

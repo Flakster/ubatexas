@@ -16,7 +16,8 @@ export default async function AdminAgendaPage() {
 
     // Pass true to include pending events and use the server client
     const allEvents = await getEvents(true, supabase);
-    const pendingEvents = allEvents.filter(e => e.status === 'pending');
+    const pendingEvents = allEvents.filter(e => e.status === 'pending' || !e.status);
+    const approvedEvents = allEvents.filter(e => e.status === 'approved');
 
     return (
         <div className="container" style={{ padding: '4rem 0' }}>
@@ -25,13 +26,25 @@ export default async function AdminAgendaPage() {
                 color: 'var(--color-primary)',
                 marginBottom: '1rem'
             }}>
-                Moderación de Agenda
+                Administración de Agenda
             </h1>
-            <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
-                Revisa las sugerencias de eventos antes de que se publiquen.
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '3rem' }}>
+                Gestiona las sugerencias pendientes y los eventos ya publicados.
             </p>
 
-            <EventModerationList initialEvents={pendingEvents} />
+            <section style={{ marginBottom: '4rem' }}>
+                <h2 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Sugerencias Pendientes ({pendingEvents.length})
+                </h2>
+                <EventModerationList initialEvents={pendingEvents} />
+            </section>
+
+            <section>
+                <h2 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Eventos Publicados ({approvedEvents.length})
+                </h2>
+                <EventModerationList initialEvents={approvedEvents} mode="approved" />
+            </section>
         </div>
     );
 }
