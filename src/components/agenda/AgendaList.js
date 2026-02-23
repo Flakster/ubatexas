@@ -221,9 +221,15 @@ export default function AgendaList({ initialEvents, isAdmin }) {
                         <button
                             onClick={() => setIsFutureExpanded(!isFutureExpanded)}
                             className="btn"
-                            style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', background: '#f5f5f5' }}
+                            style={{
+                                padding: '0.4rem 1rem',
+                                fontSize: '0.8rem',
+                                background: '#f1f1f1',
+                                color: 'var(--color-primary)',
+                                border: '1px solid var(--color-border)'
+                            }}
                         >
-                            {isFutureExpanded ? 'Ocultar' : `Ver ${farFutureEvents.length} eventos`}
+                            {isFutureExpanded ? '↑ Ocultar' : `↓ Ver ${farFutureEvents.length} eventos`}
                         </button>
                     </div>
                     {isFutureExpanded && (
@@ -243,9 +249,15 @@ export default function AgendaList({ initialEvents, isAdmin }) {
                         <button
                             onClick={() => setIsPastExpanded(!isPastExpanded)}
                             className="btn"
-                            style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', background: '#f5f5f5' }}
+                            style={{
+                                padding: '0.4rem 1rem',
+                                fontSize: '0.8rem',
+                                background: '#f1f1f1',
+                                color: 'var(--color-text-muted)',
+                                border: '1px solid var(--color-border)'
+                            }}
                         >
-                            {isPastExpanded ? 'Ocultar' : `Ver ${pastEvents.length} anteriores`}
+                            {isPastExpanded ? '↑ Ocultar' : `↓ Ver ${pastEvents.length} anteriores`}
                         </button>
                     </div>
                     {isPastExpanded && (
