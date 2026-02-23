@@ -43,9 +43,30 @@ export default function AgendaList({ initialEvents, isAdmin }) {
         return <p>No hay eventos programados.</p>;
     }
 
-    // Separate events for cleaner display if admin
+    // Date categorization logic
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const parseDate = (dateStr) => {
+        // Assuming dateStr is "YYYY-MM-DD" or similar ISO format
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return new Date(0); // Fallback for invalid dates
+        return d;
+    };
+
     const pendingEvents = isAdmin ? events.filter(e => e.status === 'pending' || !e.status) : [];
-    const approvedEvents = events.filter(e => e.status === 'approved');
+
+    const approvedEventsRaw = events.filter(e => e.status === 'approved');
+
+    const upcomingEvents = approvedEventsRaw.filter(e => {
+        const eventDate = parseDate(e.date);
+        return eventDate >= today;
+    }).sort((a, b) => parseDate(a.date) - parseDate(b.date)); // Ascending (soonest first)
+
+    const pastEvents = approvedEventsRaw.filter(e => {
+        const eventDate = parseDate(e.date);
+        return eventDate < today;
+    }).sort((a, b) => parseDate(b.date) - parseDate(a.date)); // Descending (most recent first)
 
     const renderEvent = (event) => (
         <div key={event.id} style={{
@@ -57,7 +78,7 @@ export default function AgendaList({ initialEvents, isAdmin }) {
             flexDirection: 'column',
             gap: '0.5rem',
             boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-            opacity: processingId === event.id ? 0.7 : 1,
+            opacity: processingId === event.id ? 0.7 : (event.status !== 'approved' || parseDate(event.date) < today ? 0.8 : 1),
             position: 'relative'
         }}>
             {event.status === 'pending' && (
@@ -143,19 +164,42 @@ export default function AgendaList({ initialEvents, isAdmin }) {
     return (
         <div style={{ display: 'grid', gap: '2rem' }}>
             {isAdmin && pendingEvents.length > 0 && (
-                <div style={{ display: 'contents' }}>
-                    <h2 style={{ fontSize: '1.2rem', color: 'var(--color-accent)', textTransform: 'uppercase', marginBottom: '-1rem' }}>
+                <>
+                    <h2 style={{ fontSize: '1.1rem', color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                         Sugerencias Pendientes ({pendingEvents.length})
                     </h2>
-                    {pendingEvents.map(renderEvent)}
+                    <div style={{ display: 'grid', gap: '2rem' }}>
+                        {pendingEvents.map(renderEvent)}
+                    </div>
                     <hr style={{ width: '100%', border: 'none', borderTop: '1px solid var(--color-border)', margin: '1rem 0' }} />
-                </div>
+                </>
             )}
 
-            {approvedEvents.length > 0 ? (
-                approvedEvents.map(renderEvent)
-            ) : (
-                !pendingEvents.length && <p>No hay eventos aprobados aún.</p>
+            {upcomingEvents.length > 0 && (
+                <>
+                    <h2 style={{ fontSize: '1.1rem', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        Próximos Eventos
+                    </h2>
+                    <div style={{ display: 'grid', gap: '2rem' }}>
+                        {upcomingEvents.map(renderEvent)}
+                    </div>
+                </>
+            )}
+
+            {pastEvents.length > 0 && (
+                <>
+                    {upcomingEvents.length > 0 && <hr style={{ width: '100%', border: 'none', borderTop: '1px solid var(--color-border)', margin: '1rem 0' }} />}
+                    <h2 style={{ fontSize: '1rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.8 }}>
+                        Eventos anteriores
+                    </h2>
+                    <div style={{ display: 'grid', gap: '2rem', opacity: 0.9 }}>
+                        {pastEvents.map(renderEvent)}
+                    </div>
+                </>
+            )}
+
+            {upcomingEvents.length === 0 && pastEvents.length === 0 && !pendingEvents.length && (
+                <p>No hay eventos aprobados aún.</p>
             )}
         </div>
     );
