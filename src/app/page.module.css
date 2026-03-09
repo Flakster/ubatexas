@@ -3,7 +3,7 @@
 }
 
 .hero {
-  background: linear-gradient(rgba(27, 77, 62, 0.7), rgba(27, 77, 62, 0.5)), url('/images/hero-landscape.png');
+  background: linear-gradient(rgba(27, 77, 62, 0.7), rgba(27, 77, 62, 0.5)), url('/images/hero-ubatexas.jpg');
   background-size: cover;
   background-position: center;
   color: white;
